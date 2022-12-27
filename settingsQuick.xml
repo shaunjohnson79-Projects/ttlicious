@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<settings>
+	<sheet>
+		<name>Merkmalswerte</name>
+		<nameRow>1</nameRow>
+		<columns>
+			<partNumber>
+				<item>Merkmalsname</item>
+				<item>Merkmalswert</item>
+			</partNumber>
+			<ignore>
+				<item>ADZHL</item>
+				<item>ATINN</item>
+				<item>Merkmalsname</item>
+				<item>Merkmalsbezeichnung</item>
+				<item>Merkmalswert</item>
+				<item>Change Type</item>
+				<item>Date Modified</item>
+			</ignore>
+			<compare>
+				<item>Wertebezeichnung (deutsch)</item>
+				<item>Wertebezeichnung (englisch)</item>
+				<item>Wertebezeichnung (polnisch)</item>
+				<item>Langtext</item>
+			</compare>
+			<masterUpdate>
+				<item>Wertebezeichnung (deutsch)</item>
+				<item>Wertebezeichnung (englisch)</item>
+				<item>Wertebezeichnung (polnisch)</item>
+				<item>Langtext</item>
+				<item>Change Type</item>
+			</masterUpdate>
+		</columns>
+	</sheet>
+
+
+	<updateFlags>
+		<item>update</item>
+	</updateFlags>
+	<debug>1</debug>
+</settings>
