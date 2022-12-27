@@ -15,6 +15,8 @@ def main():
     settings = parseXML(fileInfo['XML'])
     #print(settings)
     
+    
+    
     # Read the source XLS
     XLSSource={}
     for sheet in settings.getSheetNames():
@@ -39,15 +41,24 @@ def main():
         fileToRead=fileInfo['XLS_master']
         sheetToRead=sheet
         headerRow=settings.getNameRow(sheet)-1
+        
+        #cols = pd.read_excel(fileToRead,sheet_name=sheetToRead, header=None,nrows=1).values[headerRow] # read first row
+        #tempSheet = pd.read_excel(fileToRead,sheet_name=sheetToRead, header=None, skiprows=headerRow+1) # skip 1 row
+        #tempSheet.columns = cols
         tempSheet=pd.read_excel(fileToRead, sheet_name=sheetToRead, header=headerRow)
         
         #Add the search column
         partNumberList=settings.getItemListFromName(sheet,'partNumber') 
         tempSheet['search'] = tempSheet[partNumberList].agg('-'.join, axis=1)
 
+        #Add the index
+        tempSheet=tempSheet.set_index('search')
+
         #Add to dictionary
         XLSMaster.update({sheet:tempSheet})
         print("Read {} : {}".format(fileToRead,sheetToRead))
+        
+
 
     # Look for code pairs
     for sheet in settings.getSheetNames():
@@ -55,13 +66,21 @@ def main():
         
         # get the data
         DFSource=XLSSource[sheet]
-        DFSource=DFSource.set_index('search')
         DFSource['status']='current'
         DFMaster=XLSMaster[sheet]
-        DFMaster=DFMaster.set_index('search')
         print(type(DFMaster))
         print(DFMaster.info)
         print(DFSource.info)
+        
+        #get the columns to compare
+        compareList=settings.getItemListFromName(sheet,'compare') 
+        bb=DFSource.columns.get_indexer(compareList)
+        DFMaster.columns.get_indexer(compareList)
+        
+        aa=1
+        #for compareColumn in compareList:        
+        
+        
         
         #get the columns to compare
         compareList=settings.getItemListFromName(sheet,'compare') 
@@ -70,6 +89,9 @@ def main():
                 compareList.remove(compareColumn)
                 print("Remove the following coloum from compare list\n\t{}".format(compareColumn))
                 time.sleep(5)
+                
+                
+                
         
         
         #for SP, source in DFSource.iterrows():
