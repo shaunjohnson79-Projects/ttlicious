@@ -36,6 +36,17 @@ def main() -> None:
         print(indexM)
         print(indexS)    
         
+        
+        for SP, sourceLine in source.data.iterrows():
+            #get the search terms
+            searchTerm=source.data.at[SP,'searchIndex']
+            bb=master.data.index[master.data['searchIndex']==searchTerm].values
+            
+            print(len(bb))
+            print(bb)
+            
+        
+    def bb():    
         for SP, sourceLine in source.data.iterrows():
             # Get source and master
             if SP not in master.data.index:
@@ -49,85 +60,27 @@ def main() -> None:
                 if tempSource != tempMaster :
                     source.data.at[SP,'status']='change' 
                     print('change')
-        
-        
-        
-        
-        #XLSSource.sheet[SPS]=sourceSheet
-    
-    # Create list of columns to compare
-    #aa=XLSSource.sheet[0].data
-    #print(aa)
-    
-    
-def blah(): 
-    
-    
-        
+                    rowToInsert=master.data.loc[SP]
 
-
-    # Look for code pairs
-    for sheet in settings.getSheetNames():
-        
-        
-        # get the data
-        DFSource=XLSSource[sheet]
-        DFSource['status']='current'
-        DFMaster=XLSMaster[sheet]
-        print(type(DFMaster))
-        print(DFMaster.info)
-        print(DFSource.info)
-        
-        #get the columns to compare
-        compareList=settings.getItemListFromName(sheet,'compare') 
-        bb=DFSource.columns.get_indexer(compareList)
-        DFMaster.columns.get_indexer(compareList)
-        
-        aa=1
-        #for compareColumn in compareList:        
-        
-        
-        
-
-                
-                
-        
-        
-        #for SP, source in DFSource.iterrows():
-        print(DFSource)
-        for SP, source in DFSource.iterrows():
-            # Get source and master
-            if SP not in DFMaster.index:
-                DFSource.at[SP,'status']='new'
-                continue
-            
-            for compareColumn in compareList:
-                tempSource=str(DFSource.at[SP,compareColumn])
-                tempMaster=str(DFMaster.at[SP,compareColumn])
-                if tempSource != tempMaster :
-                    DFSource.at[SP,'status']='change'
+                    indexList=source.data.index.tolist()
+                    aa=indexList.index(str(SP))
+                    aa=aa+0.5
                     
-                
-                
-                
-            #check the rows for 
-            #print(master.info)
-            quit()
-            
-            
-            
-            
-            
-
-                
-            
-            #sourceRow = source
-            #print(sourceRow)
-
-        
-        
-        
+                    source.data.loc[aa]=rowToInsert
+                    
+                    #print(indexList)
+                    print(aa)
+                    
+                    #print(source.data)
+                    bb=1
+                    
     
+                    
+#                      df.loc[-1] = [2, 3, 4]  # adding a row
+#  df.index = df.index + 1  # shifting index
+#  df = df.sort_index()  # sorting by index
+        
+
 
 if __name__ == "__main__":
     main()

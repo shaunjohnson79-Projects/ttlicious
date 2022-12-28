@@ -20,35 +20,28 @@ class readXLSFile():
 
     def lenSheets(self):
         return len(self.sheet)
+    
+    def addStatusColumn(self,columnName,columnValue):
+        for i, sheet in enumerate(self.sheet):
+            if columnName not in sheet.data.columns:
+                sheet.data[columnName]=columnValue
+                print('Add Column: {}'.format(columnName))
+                self.sheet[i]=sheet
 
 class readXLSSource(readXLSFile):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.type='Source'
         
-        self.__addStatusColumn()
+        self.addStatusColumn('status','current')
         
-    def __addStatusColumn(self):
-        columnName='status'
-        columnValue='current'
-        for i, sheet in enumerate(self.sheet):
-            if columnName not in sheet.data.columns:
-                sheet.data[columnName]=columnValue
-                print('Add Column: {}'.format(columnName))
-                self.sheet[i]=sheet
-    
 class readXLSMaster(readXLSFile):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.type='Master'
+     
+        self.addStatusColumn('status','reference')
         
-
-                
-            
-
-
-
-          
 class readXLSSheet():
     def __init__(self,fileName,sheet,settings):   
         # Define the variables
@@ -106,7 +99,7 @@ class readXLSSheet():
         tempString='searchIndex'
         partNumberList=settings.getItemListFromName(sheet,'partNumber') 
         self.data[tempString] = self.data[partNumberList].agg('-'.join, axis=1)
-        self.data=self.data.set_index(tempString)
+        #self.data=self.data.set_index(tempString)
 
     def __fixDuplicateColumnNames(self,columns) -> dict:
         """Create pandas to link column names"""
