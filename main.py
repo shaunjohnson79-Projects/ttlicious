@@ -1,12 +1,15 @@
 from readXMLData import parseXML
+from readXLSData import readXLSSource
+from readXLSData import readXLSMaster
 import pandas as pd
 import time
 
 
-def main():
+def main() -> None:
     print("Program Start")
     #define the filenames
     fileInfo={}
+    fileInfo.update({'XML':'settings.xml'})
     fileInfo.update({'XML':'settingsQuick.xml'})
     fileInfo.update({'XLS_source':'20210323 Hinterkipper_de en_finala.xlsx'})
     fileInfo.update({'XLS_master':'20210323 Hinterkipper_de en_final_master.xlsm'})
@@ -15,48 +18,17 @@ def main():
     settings = parseXML(fileInfo['XML'])
     #print(settings)
     
+    # Read in the XLS
+    XLSSource=readXLSSource(fileInfo['XLS_source'],settings)
+    XLSMaster=readXLSMaster(fileInfo['XLS_master'],settings)
+    
+    # Create list of columns to compare
+ 
     
     
-    # Read the source XLS
-    XLSSource={}
-    for sheet in settings.getSheetNames():
-        #read the sheet
-        fileToRead=fileInfo['XLS_source']
-        sheetToRead=sheet
-        headerRow=settings.getNameRow(sheet)-1
-        tempSheet=pd.read_excel(fileToRead, sheet_name=sheetToRead, header=headerRow)
-        
-        #Add the search column
-        partNumberList=settings.getItemListFromName(sheet,'partNumber') 
-        tempSheet['search'] = tempSheet[partNumberList].agg('-'.join, axis=1)
-
-        #Add to dictionary
-        XLSSource.update({sheet:tempSheet})
-        print("Read {} : {}".format(fileToRead,sheetToRead))
-        
-    # Read the master XLS
-    XLSMaster={}
-    for sheet in settings.getSheetNames():
-        #read the sheet
-        fileToRead=fileInfo['XLS_master']
-        sheetToRead=sheet
-        headerRow=settings.getNameRow(sheet)-1
-        
-        #cols = pd.read_excel(fileToRead,sheet_name=sheetToRead, header=None,nrows=1).values[headerRow] # read first row
-        #tempSheet = pd.read_excel(fileToRead,sheet_name=sheetToRead, header=None, skiprows=headerRow+1) # skip 1 row
-        #tempSheet.columns = cols
-        tempSheet=pd.read_excel(fileToRead, sheet_name=sheetToRead, header=headerRow)
-        
-        #Add the search column
-        partNumberList=settings.getItemListFromName(sheet,'partNumber') 
-        tempSheet['search'] = tempSheet[partNumberList].agg('-'.join, axis=1)
-
-        #Add the index
-        tempSheet=tempSheet.set_index('search')
-
-        #Add to dictionary
-        XLSMaster.update({sheet:tempSheet})
-        print("Read {} : {}".format(fileToRead,sheetToRead))
+def blah(): 
+    
+    
         
 
 

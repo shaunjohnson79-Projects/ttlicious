@@ -1,30 +1,68 @@
 import pandas as pd
 from readXMLData import parseXML
 
-
-
-class readXLSFile(object):
+class readXLSFile():
     def __init__(self,xlsFileName,settings):
         self.fileName=xlsFileName
-        self.settings=settings
         self.sheet=[]
         
-        
-        for sheet in self.settings.getSheetNames():
-            tempSheet=readXLSSheet(self.fileName,sheet,self.settings)
+        # Load in the xls sheets
+        for sheet in settings.getSheetNames():
+            tempSheet=readXLSSheet(self.fileName,sheet,settings)
             self.sheet.append(tempSheet)
+        
+    def findColumnsToCompare(self,sheet,settings):
+        pass    
+    
+    def getSheetList(self):
+        return [x.getSheetName() for x in self.sheet]
+
+
+class readXLSSource(readXLSFile):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.type='Source'
+        
+        self.__addStatusColumn()
+        
+    def __addStatusColumn(self):
+        columnName='status'
+        columnValue='current'
+        for i, sheet in enumerate(self.sheet):
+            if columnName not in sheet.data.columns:
+                sheet.data[columnName]=columnValue
+                print('Add Column: {}'.format(columnName))
+                self.sheet[i]=sheet
+    
+class readXLSMaster(readXLSFile):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.type='Master'
+        
+
+                
             
-            
-class readXLSSheet(object):
+
+
+
+          
+class readXLSSheet():
     def __init__(self,fileName,sheet,settings):   
-        #define the variables
-        self.name=sheet
+        # Define the variables
+        self.name=str
         self.data=pd
         self.columns=list
+        self.columnMap=dict
         
+        # Do initalisation steps
+        self.__addSheetName(sheet)
         self.__readFromFile(fileName,sheet,settings)
         self.__fixColumnNames()
         self.__createSearchIndex(sheet,settings)
+    
+    def __addSheetName(self,sheet):
+        """Add the sheet name"""
+        self.name=sheet
     
     def __readFromFile(self,fileName,sheet,settings):
         """Read XLS from file"""
@@ -69,6 +107,17 @@ class readXLSSheet(object):
             else:
                 returnColumns.update({column:column})
         return returnColumns
+    
+    def getSheetName(self):
+        return self.name
+    
+    def getData(self):
+        return self.data
+    
+    def getColumnMap(self):
+        return self.columnMap
+    
+    
             
 
         
@@ -79,8 +128,9 @@ class readXLSSheet(object):
 def main():
     settings = parseXML('settings.xml')
     fileName='20210323 Hinterkipper_de en_finala.xlsx'
-    source=readXLSFile(fileName,settings)
-
+    source=readXLSSource(fileName,settings)
+    print(source.getSheetList())
+    #master=readXLSMaster(fileName,settings)
     return
 
 if __name__ == '__main__':
