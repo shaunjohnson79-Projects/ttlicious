@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from readXMLData import parseXML
 
 class readXLSFile():
@@ -17,6 +18,8 @@ class readXLSFile():
     def getSheetList(self):
         return [x.getSheetName() for x in self.sheet]
 
+    def lenSheets(self):
+        return len(self.sheet)
 
 class readXLSSource(readXLSFile):
     def __init__(self, *args, **kwargs):
@@ -52,13 +55,23 @@ class readXLSSheet():
         self.name=str
         self.data=pd
         self.columns=list
-        self.columnMap=dict
+        self.columnMap=pd
         
         # Do initalisation steps
         self.__addSheetName(sheet)
         self.__readFromFile(fileName,sheet,settings)
         self.__fixColumnNames()
         self.__createSearchIndex(sheet,settings)
+        
+        #self.getCompareList(sheet,settings)
+        
+    def getCompareList(self,sheet,settings) -> list:
+        """Create list of updated row names"""
+        compareList=settings.getItemListFromName(sheet,'compare')
+        columnMap=self.columnMap
+        reducedList=columnMap[columnMap['original'].isin(compareList)]
+        compareList=list(reducedList['updated'])
+        return compareList
     
     def __addSheetName(self,sheet):
         """Add the sheet name"""
@@ -84,7 +97,8 @@ class readXLSSheet():
         self.columnMap=self.__fixDuplicateColumnNames(self.columns)
         
         #apply column names 
-        self.data.columns = list(self.columnMap.keys())
+        #self.data.columns = list(self.columnMap.keys())
+        self.data.columns=list(self.columnMap["updated"])
     
     def __createSearchIndex(self,sheet,settings):
         """update the index according to the xml settings"""
@@ -95,17 +109,18 @@ class readXLSSheet():
         self.data=self.data.set_index(tempString)
 
     def __fixDuplicateColumnNames(self,columns) -> dict:
-        """Create dict with unique column names"""
-        returnColumns={}
+        """Create pandas to link column names"""
+        returnColumns = pd.DataFrame(str, index=range(len(columns)), columns=['original','updated'])
         
         for i, column in enumerate(columns):
+            returnColumns.at[i,'original']=column
             if columns.count(column)>1:
                 if i == 0:
                     raise Exception("Write code here")
                 tempString="{} {}".format(columns[i-1],columns[i])
-                returnColumns.update({tempString:column})
+                returnColumns.at[i, 'updated']=tempString
             else:
-                returnColumns.update({column:column})
+                returnColumns.at[i, 'updated']=column
         return returnColumns
     
     def getSheetName(self):

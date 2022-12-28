@@ -22,8 +22,42 @@ def main() -> None:
     XLSSource=readXLSSource(fileInfo['XLS_source'],settings)
     XLSMaster=readXLSMaster(fileInfo['XLS_master'],settings)
     
+    for SPS, sourceSheet in enumerate(XLSSource.sheet):
+        
+        # Get the sheets manually
+        source=XLSSource.sheet[SPS]
+        master=XLSMaster.sheet[SPS]
+        
+        #get list of columns to use for compare
+        compareList=sourceSheet.getCompareList(sourceSheet.name,settings)
+        indexS=source.data.columns.get_indexer(compareList)
+        indexM=master.data.columns.get_indexer(compareList)
+        print(compareList)
+        print(indexM)
+        print(indexS)    
+        
+        for SP, sourceLine in source.data.iterrows():
+            # Get source and master
+            if SP not in master.data.index:
+                source.data.at[SP,'status']='new'
+                print('new line')
+                continue  
+            
+            for compareColumn in compareList:
+                tempSource=str(source.data.at[SP,compareColumn])
+                tempMaster=str(master.data.at[SP,compareColumn])
+                if tempSource != tempMaster :
+                    source.data.at[SP,'status']='change' 
+                    print('change')
+        
+        
+        
+        
+        #XLSSource.sheet[SPS]=sourceSheet
+    
     # Create list of columns to compare
- 
+    #aa=XLSSource.sheet[0].data
+    #print(aa)
     
     
 def blah(): 
@@ -54,14 +88,7 @@ def blah():
         
         
         
-        #get the columns to compare
-        compareList=settings.getItemListFromName(sheet,'compare') 
-        for compareColumn in compareList:
-            if compareColumn not in DFSource.columns or compareColumn not in DFMaster.columns:
-                compareList.remove(compareColumn)
-                print("Remove the following coloum from compare list\n\t{}".format(compareColumn))
-                time.sleep(5)
-                
+
                 
                 
         

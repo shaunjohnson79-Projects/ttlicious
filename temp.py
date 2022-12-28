@@ -1,10 +1,10 @@
 
 import numpy as np
+import pandas as pd
 from collections import UserList 
 
-
-
-def mainOld() -> None:
+ 
+def main1() -> None:
     
     objectList=[]
     objectDict={}
@@ -16,14 +16,14 @@ def mainOld() -> None:
         objectDict.update({len(objectDict):tempLetter})
         
 
-    results = [x.getSheetName() for x in objectList]
-    print(results)
+    results = [x.getValue() for x in objectList]
+    #print(results)
+    bb=objectList[0].getValue()
+    print(bb)
 
 
-    #print(objectDict)
-    #print(objectDict.get(0))
-    tempLetter.append("asd")
-    print(type(tempLetter))
+aa=range(0,3,2)
+print(aa)
     
     
     
@@ -34,10 +34,14 @@ class letters():
     def __init__(self,input):
         self.value="{}_{}".format(input,input)
         
-    def getSheetName(self):
+    def getValue(self):
         return self.value
+    
+    def __repr__(self):
+        rep = "Value={}".format(self.value)
+        return rep
 
-def mainNumpy() -> None:
+def main2() -> None:
     student_def = [("name","S10"),("roll","i8"),("marks","f8")]
     student_array = np.zeros((3),dtype=student_def)
     
@@ -55,7 +59,26 @@ def mainNumpy() -> None:
     
     print(type(student_array))
     print(student_array)
+    
+def main3() -> None:
+
+    aa=Test("joe",23)
+    aa=Test("kate",16)
+    aa=Test("adam",56)    
+    
+    print(aa)
+    print(type(aa))
+    
+    print(aa.all_objects[0].name)
+ 
+class Test():
+    all_objects=[]   
+    def __init__(self,name,age):
+        self.name = name
+        self.age = age
+        Test.all_objects.append(self)
+
 
 if __name__ == "__main__":
-    mainOld()
+    main1()
     
