@@ -40,7 +40,10 @@ def main() -> None:
         for SP, sourceLine in source.data.iterrows():
             #get the search terms
             searchTerm=source.data.at[SP,'searchIndex']
-            bb=master.data.index[master.data['searchIndex']==searchTerm].values
+            MS=master.data.index[master.data['searchIndex']==searchTerm].values
+            if len(MS) > 1:
+                raise Exception("Write code here")
+            MS=int(MS)
             
             print(len(bb))
             print(bb)
