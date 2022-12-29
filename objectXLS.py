@@ -1,7 +1,8 @@
 import pandas as pd
-import numpy as np
-from readXMLData import parseXML
+#import numpy as np
+import objectXMLSettings
 import shaunScripts
+
 
 
 class readXLSFile():
@@ -159,7 +160,7 @@ class readXLSSheet():
 
         
 def debugTest():
-    settings = parseXML('settings.xml')
+    settings = objectXMLSettings.parseXML('settings.xml')
     fileName='20210323 Hinterkipper_de en_finala.xlsx'
     source=readXLSSource(fileName,settings)
     print(source.getSheetList())

@@ -1,7 +1,6 @@
-from readXMLData import parseXML 
-from readXLSData import readXLSSource, readXLSMaster, readXLSSheet
-#import xlsxwriter
 import pandas as pd
+import objectXLS
+import objectXMLSettings
 
 
 
@@ -17,16 +16,16 @@ def main() -> None:
     fileInfo.update({'XLS_master':'20210323 Hinterkipper_de en_final_master.xlsm'})
 
     # Read in the settings
-    settings = parseXML(fileInfo['XML'])
+    settings = objectXMLSettings.parseXML(fileInfo['XML'])
     #print(settings)
     
     # Read in the XLS
-    XLSSource=readXLSSource(fileInfo['XLS_source'],settings)
-    XLSMaster=readXLSMaster(fileInfo['XLS_master'],settings)
+    XLSSource=objectXLS.readXLSSource(fileInfo['XLS_source'],settings)
+    XLSMaster=objectXLS.readXLSMaster(fileInfo['XLS_master'],settings)
     
     #get the compared XLS
     XLSCompare=compareSourceToMaster(XLSSource,XLSMaster,settings) 
-    assert isinstance(XLSCompare, readXLSSource)
+    assert isinstance(XLSCompare, objectXLS.readXLSSource)
     
     writeToXLS(XLSCompare)
     
@@ -41,7 +40,7 @@ def writeToXLS(XLSData) -> bool:
         
         # Get sheet data
         sheet=XLSData.getSheet(sheetName)
-        assert isinstance(sheet, readXLSSheet)
+        assert isinstance(sheet, objectXLS.readXLSSheet)
         
         originalColumns=sheet.columnMap['original'].tolist()
         originalColumns.append('status')
@@ -59,7 +58,7 @@ def writeToXLS(XLSData) -> bool:
         for sheetName in sheetList:
             # Get sheet data
             sheet=XLSData.getSheet(sheetName)
-            assert isinstance(sheet, readXLSSheet)
+            assert isinstance(sheet, objectXLS.readXLSSheet)
 
             #tempSheet=XLSCompare.sheet[SPS]    
             print(sheet.name)
@@ -98,8 +97,8 @@ def compareSourceToMaster(XLSSource,XLSMaster,settings) -> object:
         # Get the sheets manually
         source=XLSSource.getSheet(sheetName)
         master=XLSMaster.getSheet(sheetName) 
-        assert isinstance(source, readXLSSheet) 
-        assert isinstance(master, readXLSSheet)  
+        assert isinstance(source, objectXLS.readXLSSheet) 
+        assert isinstance(master, objectXLS.readXLSSheet)  
         
         # Display to screen
         print("Compare Sheet: {}".format(source.name))

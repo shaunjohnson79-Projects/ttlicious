@@ -1,4 +1,5 @@
 def getIndices(tempList,searchValue,returnLength=None):
+    """Search through list a return multiple indicies"""
     index = [ind for ind, ele in enumerate(tempList) if ele == searchValue]
     if returnLength != None:
         if len(index) != returnLength:
