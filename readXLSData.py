@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 from readXMLData import parseXML
+import shaunScripts
+
 
 class readXLSFile():
     def __init__(self,xlsFileName,settings):
@@ -11,22 +13,29 @@ class readXLSFile():
         for sheet in settings.getSheetNames():
             tempSheet=readXLSSheet(self.fileName,sheet,settings)
             self.sheet.append(tempSheet)
-        
-    def findColumnsToCompare(self,sheet,settings):
-        pass    
     
-    def getSheetList(self):
+    def getSheetList(self) -> list:
         return [x.getSheetName() for x in self.sheet]
-
-    def lenSheets(self):
-        return len(self.sheet)
     
-    def addStatusColumn(self,columnName,columnValue):
+    def getSheet(self,sheetName) -> pd:
+        sheetList=self.getSheetList()
+        index=shaunScripts.getIndices(sheetList,sheetName,1)
+        return self.sheet[index]
+    
+    def setSheet(self,sheetName,tempSheet) -> bool:
+        sheetList=self.getSheetList()
+        index=shaunScripts.getIndices(sheetList,sheetName,1)
+        self.sheet[index]=tempSheet
+        return True     
+        
+    def addStatusColumn(self,columnName,columnValue) -> bool:
+        returnFlag=False
         for i, sheet in enumerate(self.sheet):
             if columnName not in sheet.data.columns:
                 sheet.data[columnName]=columnValue
                 print('Add Column: {}'.format(columnName))
                 self.sheet[i]=sheet
+                returnFlag=True
 
 class readXLSSource(readXLSFile):
     def __init__(self, *args, **kwargs):
@@ -116,14 +125,30 @@ class readXLSSheet():
                 returnColumns.at[i, 'updated']=column
         return returnColumns
     
-    def getSheetName(self):
+    def getSheetName(self) -> str:
         return self.name
     
-    def getData(self):
+    def getSheetData(self) -> pd:
         return self.data
     
-    def getColumnMap(self):
+    def setSheetData(self,data) -> bool:
+        self.data = data
+        return True
+
+    def getColumnMap(self) -> pd:
         return self.columnMap
+    
+    def __repr__(self):   
+        import io
+        buffer = io.StringIO()
+        self.data.info(buf=buffer)
+        s = buffer.getvalue().strip()
+        
+        returnString=''
+        returnString=f"{returnString}Sheet Name: {self.name}\n"
+        returnString=f"{returnString}Sheet Data:\n"
+        returnString=f"{returnString}{s}\n"
+        return returnString
     
     
             
@@ -133,13 +158,19 @@ class readXLSSheet():
         
 
         
-def main():
+def debugTest():
     settings = parseXML('settings.xml')
     fileName='20210323 Hinterkipper_de en_finala.xlsx'
     source=readXLSSource(fileName,settings)
     print(source.getSheetList())
     #master=readXLSMaster(fileName,settings)
+    sheetList=source.getSheetList()
+    for sheetName in sheetList:
+        tempSheet=source.getSheet(sheetName)
+        print(tempSheet)
+        source.setSheet(sheetName,tempSheet)
+        
     return
 
 if __name__ == '__main__':
-    main()
+    debugTest()

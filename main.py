@@ -1,6 +1,6 @@
 from readXMLData import parseXML 
 from readXLSData import readXLSSource, readXLSMaster, readXLSSheet
-import xlsxwriter
+#import xlsxwriter
 import pandas as pd
 
 
@@ -8,7 +8,7 @@ import pandas as pd
 
 
 def main() -> None:
-    print("Program Start")
+    print(f"Program Start")
     #define the filenames
     fileInfo={}
     fileInfo.update({'XML':'settings.xml'})
@@ -24,16 +24,24 @@ def main() -> None:
     XLSSource=readXLSSource(fileInfo['XLS_source'],settings)
     XLSMaster=readXLSMaster(fileInfo['XLS_master'],settings)
     
-    
-    
     #get the compared XLS
     XLSCompare=compareSourceToMaster(XLSSource,XLSMaster,settings) 
     assert isinstance(XLSCompare, readXLSSource)
     
+    writeToXLS(XLSCompare)
     
-    for SPS, sheet in enumerate(XLSCompare.sheet):
-        assert isinstance(sheet, readXLSSheet)
+    
+def writeToXLS(XLSData) -> bool:   
+    """
+    Write XLS data to a file
+    """
+    
+    sheetList=XLSData.getSheetList()
+    for sheetName in sheetList:
         
+        # Get sheet data
+        sheet=XLSData.getSheet(sheetName)
+        assert isinstance(sheet, readXLSSheet)
         
         originalColumns=sheet.columnMap['original'].tolist()
         originalColumns.append('status')
@@ -41,34 +49,18 @@ def main() -> None:
         
         updatedColumns=sheet.columnMap['updated'].tolist()
         updatedColumns.append('status')
-        
-        
+
         sheet.data = sheet.data[updatedColumns].copy()
         sheet.data.columns=originalColumns
         
-
-        
-        
-        NOC=len(sheet.data.columns)
-        def highlight_rows(x):
-            df = x.copy()
-            mask1 = df['status'] == 'new'
-            mask2= df['ATINN'] == 11355
-            df.loc[mask1, :] = 'background-color: yellow'
-            df.loc[mask2, :] = 'background-color: yellow'
-            return df 
-            # x
-            # if x.status == 'new':
-            #     return['background-color: pink']*NOC
-            # else:
-            #     return['background-color: blue']*NOC
-        #sheet.data.style.apply(highlight_rows, axis = None)
-        print(sheet.data)
-        
-        XLSSource.sheet[SPS]=sheet
+        XLSData.setSheet(sheetName,sheet)
     
     with pd.ExcelWriter('pandas_to_excel.xlsx') as writer:
-        for SPS, sheet in enumerate(XLSCompare.sheet):
+        for sheetName in sheetList:
+            # Get sheet data
+            sheet=XLSData.getSheet(sheetName)
+            assert isinstance(sheet, readXLSSheet)
+
             #tempSheet=XLSCompare.sheet[SPS]    
             print(sheet.name)
             sheet.data.to_excel(writer, sheet_name=sheet.name,index=False) 
@@ -90,28 +82,30 @@ def main() -> None:
                     worksheet.set_row(i+1, cell_format=format_reference)
                 else:
                     pass
-            
-
-
-            
+    return True                  
     
 def compareSourceToMaster(XLSSource,XLSMaster,settings) -> object:
-    """return XLScompare after comparing sheets in source with the master"""
+    """
+    Return XLScompare after comparing sheets in source with the master
+    """
     
     # Define the return variable
     XLSreturn=XLSSource
     
-    for SPS, sourceSheet in enumerate(XLSSource.sheet):
+    sheetList=XLSSource.getSheetList()
+    for sheetName in sheetList:
         
         # Get the sheets manually
-        source=XLSSource.sheet[SPS]
-        master=XLSMaster.sheet[SPS]
+        source=XLSSource.getSheet(sheetName)
+        master=XLSMaster.getSheet(sheetName) 
+        assert isinstance(source, readXLSSheet) 
+        assert isinstance(master, readXLSSheet)  
         
         # Display to screen
         print("Compare Sheet: {}".format(source.name))
         
         #get list of columns to use for compare
-        compareList=sourceSheet.getCompareList(sourceSheet.name,settings)
+        compareList=source.getCompareList(source.name,settings)
         indexS=source.data.columns.get_indexer(compareList)
         indexM=master.data.columns.get_indexer(compareList)
         # print(compareList)
@@ -130,9 +124,6 @@ def compareSourceToMaster(XLSSource,XLSMaster,settings) -> object:
                 #check for data which is not in master
                 source.data.at[SP,'status']='new'
                 print("  {} New Line   : {}".format(SP,searchTerm))
-
-                
-
                 continue
             else:
                 MP=int(MP)
@@ -146,25 +137,14 @@ def compareSourceToMaster(XLSSource,XLSMaster,settings) -> object:
                     rowToInsert=master.data.loc[MP]
                     source.data.loc[SP+0.5]=rowToInsert
                     
-        #reorder the index
+        # Reorder the index
         source.data=source.data.sort_index().reset_index(drop = True)  
         
-
-        
-        
         # Add changed source data to XLSreturn
-        XLSreturn.sheet[SPS]=source
+        XLSreturn.setSheet(sheetName,source) 
     
     return XLSreturn
             
-        
-                    
-    
-                    
-#                      df.loc[-1] = [2, 3, 4]  # adding a row
-#  df.index = df.index + 1  # shifting index
-#  df = df.sort_index()  # sorting by index
-        
 
 
 if __name__ == "__main__":

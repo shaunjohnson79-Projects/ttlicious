@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from collections import UserList 
 
- 
+
 def main1() -> None:
     
     objectList=[]
@@ -22,12 +22,7 @@ def main1() -> None:
     print(bb)
 
 
-aa=range(0,3,2)
-print(aa)
-    
-    
-    
- 
+
   
 
 class letters():
@@ -78,7 +73,12 @@ class Test():
         self.age = age
         Test.all_objects.append(self)
 
+def main4():
+    list=['Shaun','edna','shaun','Shaun']
+    
+    aa=list.index('Shaun')
+    print(aa)
 
 if __name__ == "__main__":
-    main1()
+    main4()
     
