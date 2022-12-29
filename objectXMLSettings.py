@@ -57,7 +57,7 @@ class parseXML(object):
         partNumberString=self.__getItemList(partNumber)
         return partNumberString  
 
-def main():
+def testDebug():
     fileName='settings.xml'
     settings = parseXML("settings.xml")
     sheetNames=settings.getSheetNames()
@@ -76,6 +76,6 @@ def main():
         return
     
 if __name__ == '__main__':
-    main()
+    testDebug()
     
     
