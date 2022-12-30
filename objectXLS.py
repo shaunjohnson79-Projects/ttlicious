@@ -2,9 +2,14 @@ import pandas as pd
 #import numpy as np
 import objectXMLSettings
 import shaunScripts
+from datetime import datetime
+import os.path
 
 
 class readXLSFile():
+    _columnName_date = "date"
+    _columnName_status = "status"
+
     def __init__(self, xlsFileName, settings):
         self.fileName = xlsFileName
         self.sheet = []
@@ -28,7 +33,7 @@ class readXLSFile():
         self.sheet[index] = tempSheet
         return True
 
-    def addStatusColumn(self, columnName, columnValue) -> bool:
+    def addColumn(self, columnName, columnValue) -> bool:
         returnFlag = False
         for i, sheet in enumerate(self.sheet):
             if columnName not in sheet.data.columns:
@@ -38,20 +43,33 @@ class readXLSFile():
                 returnFlag = True
 
 
+class readXLSUpdate(readXLSFile):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.type = 'Update'
+
+        currentDateAndTime = datetime.now().strftime("%Y.%m.%d %H:%M:%S")
+        self.addColumn(self._columnName_date, currentDateAndTime)
+
+
 class readXLSSource(readXLSFile):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.type = 'Source'
 
-        self.addStatusColumn('status', 'current')
+        aa = 1
+        self.type = 'Source'
+        self.addColumn(self._columnName_status, 'current')
 
 
 class readXLSMaster(readXLSFile):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.type = 'Master'
 
-        self.addStatusColumn('status', 'reference')
+        self.type = 'Master'
+        self.addColumn('status', 'reference')
+        currentDateAndTime = datetime.now().strftime("%Y.%m.%d %H:%M:%S")
+        self.addColumn(self._columnName_date, currentDateAndTime)
 
 
 class readXLSSheet():
@@ -63,10 +81,10 @@ class readXLSSheet():
         self.columnMap = pd
 
         # Do initalisation steps
-        self.__addSheetName(sheet)
-        self.__readFromFile(fileName, sheet, settings)
-        self.__fixColumnNames()
-        self.__createSearchIndex(sheet, settings)
+        self._addSheetName(sheet)
+        self._readFromFile(fileName, sheet, settings)
+        self._fixColumnNames()
+        self._createSearchIndex(sheet, settings)
 
         # self.getCompareList(sheet,settings)
 
@@ -78,17 +96,22 @@ class readXLSSheet():
         compareList = list(reducedList['updated'])
         return compareList
 
-    def __addSheetName(self, sheet):
+    def _addSheetName(self, sheet):
         """Add the sheet name"""
         self.name = sheet
 
-    def __readFromFile(self, fileName, sheet, settings):
-        """Read XLS from file"""
+    def _readFromFile(self, fileName, sheet, settings):
+        """Read sheet from XLS file"""
+        # Check if file exists
+        if os.path.isfile(fileName):
+            print(f"File exist: {fileName}")
+        else:
+            tempText = f"File does not exist: {fileName}"
+            raise Exception(tempText)
 
         # read the columns
         headerRow = settings.getNameRow(sheet)-1
-        self.columns = pd.read_excel(
-            fileName, sheet_name=sheet, header=None, nrows=headerRow+1).values[headerRow]
+        self.columns = pd.read_excel(fileName, sheet_name=sheet, header=None, nrows=headerRow+1).values[headerRow]
         self.columns = self.columns.tolist()
 
         # read the data
@@ -97,7 +120,7 @@ class readXLSSheet():
         # Print to screen
         print("Read {} : {}".format(fileName, sheet))
 
-    def __fixColumnNames(self):
+    def _fixColumnNames(self):
         """Fix the column names so there are no duplicates"""
         # create unique list for column names
         self.columnMap = self.__fixDuplicateColumnNames(self.columns)
@@ -106,7 +129,7 @@ class readXLSSheet():
         #self.data.columns = list(self.columnMap.keys())
         self.data.columns = list(self.columnMap["updated"])
 
-    def __createSearchIndex(self, sheet, settings):
+    def _createSearchIndex(self, sheet, settings):
         """update the index according to the xml settings"""
         # create the search index
         tempString = 'searchIndex'

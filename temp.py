@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 from collections import UserList
+from datetime import datetime
 
 
 def main1() -> None:
@@ -81,5 +82,22 @@ def main4():
     print(aa)
 
 
+def main5():
+    currentDateAndTime = datetime.now().strftime("%Y.%m.%d %H:%M:%S")
+    print(currentDateAndTime)
+
+
+def main6():
+    aa = Child()
+
+
+class Parent(object):
+    foobar = ['Hello']
+
+
+class Child(Parent):
+    foobar = Parent.foobar + ['world']
+
+
 if __name__ == "__main__":
-    main4()
+    main6()
