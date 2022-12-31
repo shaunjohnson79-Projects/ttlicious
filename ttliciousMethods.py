@@ -1,8 +1,8 @@
 import pandas as pd
-import objectXLS
+import OBL
 
 
-def updateMaster(XLSUpdate, XLSMaster) -> object:
+def updateMaster(XLSUpdate: OBL.XLSFile, XLSMaster: OBL.XLSFile) -> OBL.XLSMaster:
     """Update the master sheet with data that was flagged update"""
 
     # Define the return variable
@@ -13,8 +13,6 @@ def updateMaster(XLSUpdate, XLSMaster) -> object:
         # Get the sheets manually
         update = XLSUpdate.getSheet(sheetName)
         master = XLSMaster.getSheet(sheetName)
-        assert isinstance(update, objectXLS.readXLSSheet)
-        assert isinstance(master, objectXLS.readXLSSheet)
 
         # Display to screen
         print("Update Sheet: {}".format(update.name))
@@ -51,7 +49,7 @@ def updateMaster(XLSUpdate, XLSMaster) -> object:
     return XLSreturn
 
 
-def compareSourceToMaster(XLSSource, XLSMaster, settings) -> object:
+def compareSourceToMaster(XLSSource: OBL.XLSFile, XLSMaster: OBL.XLSFile, settings: OBL.XMLSettings) -> OBL.XLSSource:
     """
     Return XLScompare after comparing sheets in source with the master
     """
@@ -66,8 +64,6 @@ def compareSourceToMaster(XLSSource, XLSMaster, settings) -> object:
         # Get the sheets manually
         source = XLSSource.getSheet(sheetName)
         master = XLSMaster.getSheet(sheetName)
-        assert isinstance(source, objectXLS.readXLSSheet)
-        assert isinstance(master, objectXLS.readXLSSheet)
 
         # Display to screen
         print("Compare Sheet: {}".format(source.name))
@@ -117,7 +113,7 @@ def compareSourceToMaster(XLSSource, XLSMaster, settings) -> object:
     return XLSreturn
 
 
-def writeToXLS(XLSData, fileName, TTfileType, settings) -> bool:
+def writeToXLS(XLSData: OBL.XLSFile, fileName: str, TTfileType: str, settings: OBL.XMLSettings) -> bool:
     """
     Write XLS data to a file
     """
@@ -131,7 +127,6 @@ def writeToXLS(XLSData, fileName, TTfileType, settings) -> bool:
 
         # Get sheet data
         sheet = XLSData.getSheet(sheetName)
-        assert isinstance(sheet, objectXLS.readXLSSheet)
 
         originalColumns = sheet.columnMap['original'].tolist()
         match TTfileType:
@@ -165,7 +160,6 @@ def writeToXLS(XLSData, fileName, TTfileType, settings) -> bool:
         for sheetName in sheetList:
             # Get sheet data
             sheet = XLSData.getSheet(sheetName)
-            assert isinstance(sheet, objectXLS.readXLSSheet)
 
             # tempSheet=XLSCompare.sheet[SPS]
             rowOffSet = settings.getNameRow(sheetName)
