@@ -2,7 +2,11 @@ import pandas as pd
 import OBL
 
 
-def updateMaster(XLSUpdate: OBL.XLSFile, XLSMaster: OBL.XLSFile) -> OBL.XLSMaster:
+def getListToUpdate(XLSUpdate: OBL.XLSUpdate) -> OBL.XLSUpdate:
+    pass
+
+
+def updateMaster(XLSUpdate: OBL.XLSUpdate, XLSMaster: OBL.XLSMaster) -> OBL.XLSMaster:
     """Update the master sheet with data that was flagged update"""
 
     # Define the return variable
@@ -31,10 +35,13 @@ def updateMaster(XLSUpdate: OBL.XLSFile, XLSMaster: OBL.XLSFile) -> OBL.XLSMaste
                     # Create pointer based on UP position
                     MP = UP+0.5
                     updateLine['status'] = 'new'
+                    XLSreturn.modificationFound = True
+
                 else:
                     # Get pointer for row to replace
                     MP = int(MP)
                     updateLine['status'] = 'change'
+                    XLSreturn.modificationFound = True
 
                 # Display to screen
                 print(f"  Update Master: {searchTerm:25} {updateLine['status']}")
@@ -49,14 +56,14 @@ def updateMaster(XLSUpdate: OBL.XLSFile, XLSMaster: OBL.XLSFile) -> OBL.XLSMaste
     return XLSreturn
 
 
-def compareSourceToMaster(XLSSource: OBL.XLSFile, XLSMaster: OBL.XLSFile, settings: OBL.XMLSettings) -> OBL.XLSSource:
+def compareSourceToMaster(XLSSource: OBL.XLSSource, XLSMaster: OBL.XLSMaster, settings: OBL.XMLSettings) -> OBL.XLSUpdate:
     """
     Return XLScompare after comparing sheets in source with the master
     """
 
-    # Define the return variable
-    XLSreturn = XLSSource
-    XLSreturn.modificationFound = False
+    # Get the return variable
+    XLSCompare = XLSSource
+    XLSCompare.convertClass(OBL.XLSCompare)
 
     sheetList = XLSSource.getSheetList()
     for sheetName in sheetList:
@@ -88,7 +95,7 @@ def compareSourceToMaster(XLSSource: OBL.XLSFile, XLSMaster: OBL.XLSFile, settin
                 # check for data which is not in master
                 source.data.at[SP, 'status'] = 'new'
                 print("  {} New Line   : {}".format(SP, searchTerm))
-                XLSreturn.modificationFound = True
+                XLSCompare.modificationFound = True
                 continue
             else:
                 MP = int(MP)
@@ -102,15 +109,15 @@ def compareSourceToMaster(XLSSource: OBL.XLSFile, XLSMaster: OBL.XLSFile, settin
                         SP, searchTerm, compareColumn))
                     rowToInsert = master.data.loc[MP]
                     source.data.loc[SP+0.5] = rowToInsert
-                    XLSreturn.modificationFound = True
+                    XLSCompare.modificationFound = True
 
         # Reorder the index
         source.data = source.data.sort_index().reset_index(drop=True)
 
         # Add changed source data to XLSreturn
-        XLSreturn.setSheet(sheetName, source)
+        XLSCompare.setSheet(sheetName, source)
 
-    return XLSreturn
+    return XLSCompare
 
 
 def writeToXLS(XLSData: OBL.XLSFile, fileName: str, TTfileType: str, settings: OBL.XMLSettings) -> bool:
@@ -128,35 +135,34 @@ def writeToXLS(XLSData: OBL.XLSFile, fileName: str, TTfileType: str, settings: O
         # Get sheet data
         sheet = XLSData.getSheet(sheetName)
 
-        originalColumns = sheet.columnMap['original'].tolist()
-        match TTfileType:
-            case 'compare':
-                originalColumns.append('status')
-            case 'dataBase':
-                originalColumns.append('status')
-                originalColumns.append('date')
-                pass
-            case _:
-                pass
+        # Update the data with the print columns only
+        sheet.data = sheet.data[sheet.printList].copy()
 
-        updatedColumns = sheet.columnMap['updated'].tolist()
-        match TTfileType:
-            case 'compare':
-                updatedColumns.append('status')
-            case 'dataBase':
-                updatedColumns.append('status')
-                updatedColumns.append('date')
-                pass
-            case _:
-                pass
-
-        sheet.data = sheet.data[updatedColumns].copy()
-        sheet.data.columns = originalColumns
+        # Replace Duplicate Columns with Original Columns
+        sheet.replaceDuplicateColumnsWithOriginalColumns()
 
         XLSData.setSheet(sheetName, sheet)
 
+        str(XLSData.type).lower()
+
+        # Define the colurs of the rows
+        colour_new = False
+        colour_change = False
+        colour_reference = False
+        match str(XLSData.type).lower():
+            case 'compare':
+                colour_new = '#FCF3CF'
+                colour_change = '#D4E6F1'
+                colour_reference = '#D1F2EB'
+            case 'master':
+                colour_new = '#FCF3CF'
+                colour_change = '#D4E6F1'
+            case _:
+                pass
+
     # Write the data to file
     with pd.ExcelWriter(fileName, engine='xlsxwriter',) as writer:
+        print(f"Write {fileName}")
         for sheetName in sheetList:
             # Get sheet data
             sheet = XLSData.getSheet(sheetName)
@@ -164,30 +170,24 @@ def writeToXLS(XLSData: OBL.XLSFile, fileName: str, TTfileType: str, settings: O
             # tempSheet=XLSCompare.sheet[SPS]
             rowOffSet = settings.getNameRow(sheetName)
             sheet.data.to_excel(writer, sheet_name=sheet.name, index=False, startrow=rowOffSet-1)
+            print(f"  Sheet: {sheetName}")
 
             workbook = writer.book
             worksheet = writer.sheets[sheet.name]
 
-            match TTfileType:
-                case 'compare':
-                    format_new = workbook.add_format({'bg_color': '#FCF3CF'})
-                    format_change = workbook.add_format({'bg_color': '#D4E6F1'})
-                    format_reference = workbook.add_format({'bg_color': '#D1F2EB'})
-                case 'dataBase':
-                    format_new = workbook.add_format({'bg_color': '#FCF3CF'})
-                    format_change = workbook.add_format({'bg_color': '#D4E6F1'})
-                    format_reference = workbook.add_format({'bg_color': False})
-                case _:
-                    pass
+            format_new = workbook.add_format({'bg_color': colour_new})
+            format_change = workbook.add_format({'bg_color': colour_change})
+            format_reference = workbook.add_format({'bg_color': colour_reference})
 
             status = sheet.data['status'].tolist()
             for i, tempStatus in enumerate(status):
-                if tempStatus == 'new':
-                    worksheet.set_row(i+1+rowOffSet-1, cell_format=format_new)
-                elif tempStatus == 'change':
-                    worksheet.set_row(i+1+rowOffSet-1, cell_format=format_change)
-                elif tempStatus == 'reference':
-                    worksheet.set_row(i+1+rowOffSet-1, cell_format=format_reference)
-                else:
-                    pass
+                match str(tempStatus).lower():
+                    case 'new':
+                        worksheet.set_row(i+1+rowOffSet-1, cell_format=format_new)
+                    case 'change':
+                        worksheet.set_row(i+1+rowOffSet-1, cell_format=format_change)
+                    case 'reference':
+                        worksheet.set_row(i+1+rowOffSet-1, cell_format=format_reference)
+                    case _:
+                        pass
     return True

@@ -1,37 +1,52 @@
 import pandas as pd
 import shaunScripts
-import os.path
+# import os.path
+import os
 from datetime import datetime
 from lxml import etree
+import errno
 
+# Settings for the objects
 columnNamesDictionary = {
     "date": "date",
     "status": "status",
     "search": "searchIndex",
 }
 
-print(columnNamesDictionary["status"])
-# _columnName_date = "date"
-# columnNamesDictionary["status"] = "status"
-# _columnName_search = "searchIndex"
-
 
 class XLSSheet():
-    def __init__(self, fileName, sheet, settings) -> None:
+    def __init__(self, fileName, sheetName, settings):
         # Define the variables
         self.name = str
         self.data = pd
-        self.columns = list
         self.columnMap = pd
         self.rowOffSet = int
+        self.printList = list
 
-        # Do initalisation steps
-        self._addSheetName(sheet)
-        self._readFromFile(fileName, sheet, settings)
-        self._fixColumnNames()
-        self._createSearchIndex(sheet, settings)
+        # read in the data
+        self.name = sheetName
+        tempColumns = self._readFromFileColumns(fileName, sheetName, settings)
+        self.data = self._readFromFileData(fileName, sheetName, settings)
 
-        # self.getCompareList(sheet,settings)
+        self.columnMap = self._createDuplicateMap(tempColumns)
+        self._fixColumnNamesOnImport()
+
+        # Get the print list
+        self.printList = self.columnMap['updated'].tolist()
+
+        # Create search index
+        self._createSearchIndex(sheetName, settings)
+
+    def replaceDuplicateColumnsWithOriginalColumns(self) -> None:
+        updatedColumns = self.columnMap['updated'].tolist()
+        originalColumns = self.columnMap['original'].tolist()
+
+        columnlist = self.data.columns.tolist()
+        for i, tempColumn in enumerate(columnlist):
+            tp = shaunScripts.getIndices(updatedColumns, tempColumn)
+            if isinstance(tp, int) == 1:
+                columnlist[i] = originalColumns[tp]
+        self.data.columns = columnlist
 
     def getCompareList(self, sheet, settings) -> list:
         """Create list of updated row names"""
@@ -41,38 +56,39 @@ class XLSSheet():
         compareList = list(reducedList['updated'])
         return compareList
 
-    def _addSheetName(self, sheet):
-        """Add the sheet name"""
-        self.name = sheet
-
-    def _readFromFile(self, fileName, sheet, settings):
-        """Read sheet from XLS file"""
-        # Check if file exists
-        if os.path.isfile(fileName):
-            print(f"File exist: {fileName}")
-        else:
-            tempText = f"File does not exist: {fileName}"
-            print(tempText)
-            raise Exception(print(tempText))
+    def _readFromFileColumns(self, fileName, sheet, settings) -> list:
+        """Read sheet columns names"""
+        self._checkFile(fileName)
 
         # read the columns
         headerRow = settings.getNameRow(sheet)-1
-        self.columns = pd.read_excel(fileName, sheet_name=sheet, header=None, nrows=headerRow+1).values[headerRow]
-        self.columns = self.columns.tolist()
+        columns = pd.read_excel(fileName, sheet_name=sheet, header=None, nrows=headerRow+1).values[headerRow].tolist()
+        return columns
+
+    def _readFromFileData(self, fileName, sheet, settings) -> pd:
+        """Read sheet columns data"""
+        self._checkFile(fileName)
 
         # read the data
-        self.data = pd.read_excel(fileName, sheet_name=sheet, header=headerRow)
+        headerRow = settings.getNameRow(sheet)-1
+        data = pd.read_excel(fileName, sheet_name=sheet, header=headerRow)
 
         # Print to screen
         print("Read {} : {}".format(fileName, sheet))
 
-    def _fixColumnNames(self):
-        """Fix the column names so there are no duplicates"""
-        # create unique list for column names
-        self.columnMap = self.__fixDuplicateColumnNames(self.columns)
+        return data
+
+    def _checkFile(self, fileName) -> bool:
+        # Check if file exists
+        if os.path.isfile(fileName):
+            return True
+        else:
+            raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), fileName)
+
+    def _fixColumnNamesOnImport(self):
+        """Fix the column names so there are no duplicates when loading the data"""
 
         # apply column names
-        #self.data.columns = list(self.columnMap.keys())
         self.data.columns = list(self.columnMap["updated"])
 
     def _createSearchIndex(self, sheet, settings):
@@ -82,10 +98,9 @@ class XLSSheet():
         self.data[columnNamesDictionary["search"]] = self.data[partNumberList].agg('-'.join, axis=1)
         # self.data=self.data.set_index(tempString)
 
-    def __fixDuplicateColumnNames(self, columns) -> dict:
+    def _createDuplicateMap(self, columns) -> pd:
         """Create pandas to link column names"""
-        returnColumns = pd.DataFrame(str, index=range(
-            len(columns)), columns=['original', 'updated'])
+        returnColumns = pd.DataFrame(str, index=range(len(columns)), columns=['original', 'updated'])
 
         for i, column in enumerate(columns):
             returnColumns.at[i, 'original'] = column
@@ -100,13 +115,6 @@ class XLSSheet():
 
     def getSheetName(self) -> str:
         return self.name
-
-    def getSheetData(self) -> pd:
-        return self.data
-
-    def setSheetData(self, data) -> bool:
-        self.data = data
-        return True
 
     def getColumnMap(self) -> pd:
         return self.columnMap
@@ -125,17 +133,14 @@ class XLSSheet():
 
 
 class XLSFile():
-    _columnName_date = "date"
-    _columnName_status = "status"
-    _columnName_search = "searchIndex"
-
-    def __init__(self, xlsFileName, settings) -> None:
+    def __init__(self, xlsFileName, settings):
+        self.type = None
         self.fileName = xlsFileName
         self.sheet = []
 
         # Load in the xls sheets
-        for sheet in settings.getSheetNames():
-            tempSheet = XLSSheet(self.fileName, sheet, settings)
+        for sheetName in settings.getSheetNames():
+            tempSheet = XLSSheet(self.fileName, sheetName, settings)
             self.sheet.append(tempSheet)
 
     def getSheetList(self) -> list:
@@ -154,39 +159,99 @@ class XLSFile():
 
     def addColumn(self, columnName, columnValue) -> bool:
         returnFlag = False
-        for i, sheet in enumerate(self.sheet):
+        sheetList = self.getSheetList()
+        for sheetName in sheetList:
+            sheet = self.getSheet(sheetName)
             if columnName not in sheet.data.columns:
                 sheet.data[columnName] = columnValue
                 print('Add Column: {}'.format(columnName))
-                self.sheet[i] = sheet
+                self.setSheet(sheetName, sheet)
                 returnFlag = True
+        return returnFlag
+
+    def addPrintList(self, columnName) -> bool:
+        returnFlag = False
+        sheetList = self.getSheetList()
+        for sheetName in sheetList:
+            sheet = self.getSheet(sheetName)
+            if columnName not in sheet.printList:
+                sheet.printList.append(columnName)
+                print(f"Add To PrintList: {columnName}")
+                self.setSheet(sheetName, sheet)
+                returnFlag = True
+        return returnFlag
+
+    def convertClass(self, classType) -> bool:
+        self.__class__ = classType
+        assert isinstance(self, classType)
+        self.conversion()
+
+    def __repr__(self):
+        returnString = ''
+        returnString += f"XLS FILE\n"
+        returnString += f"Filename: {self.fileName}\n"
+        returnString += f"Type: {self.type}\n"
+        for sheetName in self.getSheetList():
+            returnString += f"  Sheet: {sheetName}\n"
+        # import io
+        # buffer = io.StringIO()
+        # self.data.info(buf=buffer)
+        # s = buffer.getvalue().strip()
+
+        # returnString = ''
+        # returnString = f"{returnString}Sheet Name: {self.name}\n"
+        # returnString = f"{returnString}Sheet Data:\n"
+        # returnString = f"{returnString}{s}\n"
+        return returnString
 
 
 class XLSUpdate(XLSFile):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
+        self.conversion()
 
+    def conversion(self) -> None:
         self.type = 'Update'
         currentDateAndTime = datetime.now().strftime("%Y.%m.%d %H:%M:%S")
         self.addColumn(columnNamesDictionary["date"], currentDateAndTime)
+        self.addPrintList(columnNamesDictionary["date"])
 
 
 class XLSSource(XLSFile):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
+        self.conversion()
 
+    def conversion(self) -> None:
         self.type = 'Source'
+        # self.addColumn(columnNamesDictionary["status"], 'current')
+
+
+class XLSCompare(XLSFile):
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.conversion()
+
+    def conversion(self) -> None:
+        self.type = 'Compare'
         self.addColumn(columnNamesDictionary["status"], 'current')
+        self.addPrintList(columnNamesDictionary["status"])
+        self.modificationFound = False
 
 
 class XLSMaster(XLSFile):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
+        self.conversion()
 
+    def conversion(self) -> None:
         self.type = 'Master'
         self.addColumn('status', 'reference')
+        self.addPrintList(columnNamesDictionary["status"])
         currentDateAndTime = datetime.now().strftime("%Y.%m.%d %H:%M:%S")
         self.addColumn(columnNamesDictionary["date"], currentDateAndTime)
+        self.addPrintList(columnNamesDictionary["date"])
+        self.modificationFound = False
 
 
 class XMLSettings(object):
@@ -268,20 +333,22 @@ def debugXML():
 
 
 def debugXLS():
-    settings = objectXMLSettings.parseXML('settings.xml')
+    settings = XMLSettings('settings.xml')
+    settings = XMLSettings('settingsQuick.xml')
     fileName = '20210323 Hinterkipper_de en_finala.xlsx'
     source = XLSSource(fileName, settings)
     print(source.getSheetList())
-    # master=readXLSMaster(fileName,settings)
-    sheetList = source.getSheetList()
+    master = XLSMaster(fileName, settings)
+    sheetList = master.getSheetList()
     for sheetName in sheetList:
-        tempSheet = source.getSheet(sheetName)
+        tempSheet = master.getSheet(sheetName)
+        tempSheet.replaceDuplicateColumnsWithOriginalColumns()
         print(tempSheet)
-        source.setSheet(sheetName, tempSheet)
+        #source.setSheet(sheetName, tempSheet)
 
     return
 
 
 if __name__ == '__main__':
-    debugXML()
-    # debugXLS()
+    # debugXML()
+    debugXLS()
