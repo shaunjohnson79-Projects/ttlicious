@@ -4,6 +4,17 @@ import os.path
 from datetime import datetime
 from lxml import etree
 
+columnNamesDictionary = {
+    "date": "date",
+    "status": "status",
+    "search": "searchIndex",
+}
+
+print(columnNamesDictionary["status"])
+# _columnName_date = "date"
+# columnNamesDictionary["status"] = "status"
+# _columnName_search = "searchIndex"
+
 
 class XLSSheet():
     def __init__(self, fileName, sheet, settings) -> None:
@@ -41,6 +52,7 @@ class XLSSheet():
             print(f"File exist: {fileName}")
         else:
             tempText = f"File does not exist: {fileName}"
+            print(tempText)
             raise Exception(print(tempText))
 
         # read the columns
@@ -66,9 +78,8 @@ class XLSSheet():
     def _createSearchIndex(self, sheet, settings):
         """update the index according to the xml settings"""
         # create the search index
-        tempString = 'searchIndex'
         partNumberList = settings.getItemListFromName(sheet, 'partNumber')
-        self.data[tempString] = self.data[partNumberList].agg('-'.join, axis=1)
+        self.data[columnNamesDictionary["search"]] = self.data[partNumberList].agg('-'.join, axis=1)
         # self.data=self.data.set_index(tempString)
 
     def __fixDuplicateColumnNames(self, columns) -> dict:
@@ -116,6 +127,7 @@ class XLSSheet():
 class XLSFile():
     _columnName_date = "date"
     _columnName_status = "status"
+    _columnName_search = "searchIndex"
 
     def __init__(self, xlsFileName, settings) -> None:
         self.fileName = xlsFileName
@@ -156,7 +168,7 @@ class XLSUpdate(XLSFile):
 
         self.type = 'Update'
         currentDateAndTime = datetime.now().strftime("%Y.%m.%d %H:%M:%S")
-        self.addColumn(self._columnName_date, currentDateAndTime)
+        self.addColumn(columnNamesDictionary["date"], currentDateAndTime)
 
 
 class XLSSource(XLSFile):
@@ -164,7 +176,7 @@ class XLSSource(XLSFile):
         super().__init__(*args, **kwargs)
 
         self.type = 'Source'
-        self.addColumn(self._columnName_status, 'current')
+        self.addColumn(columnNamesDictionary["status"], 'current')
 
 
 class XLSMaster(XLSFile):
@@ -174,7 +186,7 @@ class XLSMaster(XLSFile):
         self.type = 'Master'
         self.addColumn('status', 'reference')
         currentDateAndTime = datetime.now().strftime("%Y.%m.%d %H:%M:%S")
-        self.addColumn(self._columnName_date, currentDateAndTime)
+        self.addColumn(columnNamesDictionary["date"], currentDateAndTime)
 
 
 class XMLSettings(object):
@@ -272,4 +284,4 @@ def debugXLS():
 
 if __name__ == '__main__':
     debugXML()
-    debugXLS()
+    # debugXLS()

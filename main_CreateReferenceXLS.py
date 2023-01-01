@@ -9,7 +9,7 @@ def main() -> None:
     fileInfo.update({'XML': 'settings.xml'})
     # fileInfo.update({'XML':'settingsQuick.xml'})
     fileInfo.update({'XLS_source': '20210323 Hinterkipper_de en_finala.xlsx'})
-    fileInfo.update({'XLS_master': '20210323 Hinterkipper_de en_final_masters.xlsx'})
+    fileInfo.update({'XLS_master': '20210323 Hinterkipper_de en_final_master.xlsx'})
 
     # Get the filename to output
     tempFileName = fileInfo['XLS_source'].replace(".xls", ".compare.xls")
