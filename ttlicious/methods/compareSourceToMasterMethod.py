@@ -21,13 +21,8 @@ def compareSourceToMaster(XLSSource: classes.XLSSource, XLSMaster: classes.XLSMa
         print("Compare Sheet: {}".format(source.name))
 
         # Get list of columns that match the compare from settings
-        compareList = list()
         settingsCompareList = settings.getItemListFromName(sheetName, "compare")
-        tempList = source.dataColumnsToList()
-        for i, listValue in enumerate(tempList):
-            listValueOriginal = source.columnMap.convertToOriginal(listValue)
-            if listValueOriginal[0] in settingsCompareList:
-                compareList.append(listValue)
+        compareList = source.matchOriginalColumnsWithList(settingsCompareList)
 
         for SP, sourceLine in source.data.iterrows():
             # Get the search terms

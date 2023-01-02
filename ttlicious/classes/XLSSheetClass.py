@@ -51,6 +51,15 @@ class XLSSheet():
     def getSheetName(self) -> str:
         return self.name
 
+    def matchOriginalColumnsWithList(self, referenceList):
+        returnList = list()
+        updatedList = self.dataColumnsToList()
+        for i, listValueUpdated in enumerate(updatedList):
+            listValueOriginal = self.columnMap.convertToOriginal(listValueUpdated)
+            if listValueOriginal[0] in referenceList:
+                returnList.append(listValueUpdated)
+        return returnList
+
     def _readFromFileColumns(self, fileName, sheetName, settings) -> list:
         """Read sheet columns names"""
         self._checkFile(fileName)
