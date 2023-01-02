@@ -1,5 +1,5 @@
-import OBL
-import ttliciousMethods
+import ttlicious.classes as classes
+import ttlicious.methods as methods
 
 
 def main() -> None:
@@ -16,12 +16,11 @@ def main() -> None:
     fileInfo.update({'XLS_compare': tempFileName})
 
     # Read in the settings
-    settings = OBL.XMLSettings(fileInfo['XML'])
-    # print(settings)
+    settings = classes.XMLSettings(fileInfo['XML'])
 
     # Read in the XLS
-    XLSSource = OBL.XLSSource(fileInfo['XLS_source'], settings)
-    XLSMaster = OBL.XLSMaster(fileInfo['XLS_master'], settings)
+    XLSSource = classes.XLSSource(fileInfo['XLS_source'], settings)
+    XLSMaster = classes.XLSMaster(fileInfo['XLS_master'], settings)
 
     print(type(XLSSource))
     print(type(XLSMaster))
@@ -29,11 +28,11 @@ def main() -> None:
     print(XLSSource)
 
     # get the compared XLS
-    XLSCompare = ttliciousMethods.compareSourceToMaster(XLSSource, XLSMaster, settings)
+    XLSCompare = methods.compareSourceToMaster(XLSSource, XLSMaster, settings)
 
     # Write a file if changes were found
     if XLSCompare.modificationFound:
-        ttliciousMethods.writeToXLS(XLSCompare, fileInfo['XLS_compare'], 'compare', settings)
+        methods.writeToXLS(XLSCompare, fileInfo['XLS_compare'], settings)
     else:
         print(f"No updates found in {fileInfo['XLS_source']}")
 

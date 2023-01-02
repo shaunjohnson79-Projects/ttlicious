@@ -56,7 +56,7 @@ def updateMaster(XLSUpdate: OBL.XLSUpdate, XLSMaster: OBL.XLSMaster) -> OBL.XLSM
     return XLSreturn
 
 
-def compareSourceToMaster(XLSSource: OBL.XLSSource, XLSMaster: OBL.XLSMaster, settings: OBL.XMLSettings) -> OBL.XLSUpdate:
+def compareSourceToMaster(XLSSource: OBL.XLSSource, XLSMaster: OBL.XLSMaster, settings: OBL.settings) -> OBL.XLSUpdate:
     """
     Return XLScompare after comparing sheets in source with the master
     """
@@ -120,7 +120,7 @@ def compareSourceToMaster(XLSSource: OBL.XLSSource, XLSMaster: OBL.XLSMaster, se
     return XLSCompare
 
 
-def writeToXLS(XLSData: OBL.XLSFile, fileName: str, TTfileType: str, settings: OBL.XMLSettings) -> bool:
+def writeToXLS(XLSData: OBL.XLSFile, fileName: str, TTfileType: str, settings: OBL.settings) -> bool:
     """
     Write XLS data to a file
     """
