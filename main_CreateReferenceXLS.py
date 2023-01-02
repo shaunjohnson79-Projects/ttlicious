@@ -1,13 +1,14 @@
-import ttlicious.classes as classes
 import ttlicious.methods as methods
+import ttlicious.classes as classes
 
 
 def main() -> None:
+
     print(f"Program Start")
     # define the filenames
     fileInfo = {}
     fileInfo.update({'XML': 'settings.xml'})
-    #fileInfo.update({'XML': 'settingsQuick.xml'})
+    fileInfo.update({'XML': 'settingsQuick.xml'})
     fileInfo.update({'XLS_source': '20210323 Hinterkipper_de en_finala.xlsx'})
     fileInfo.update({'XLS_master': '20210323 Hinterkipper_de en_final_master.xlsx'})
 
@@ -21,11 +22,6 @@ def main() -> None:
     # Read in the XLS
     XLSSource = classes.XLSSource(fileInfo['XLS_source'], settings)
     XLSMaster = classes.XLSMaster(fileInfo['XLS_master'], settings)
-
-    print(type(XLSSource))
-    print(type(XLSMaster))
-
-    print(XLSSource)
 
     # get the compared XLS
     XLSCompare = methods.compareSourceToMaster(XLSSource, XLSMaster, settings)

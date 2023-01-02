@@ -20,17 +20,20 @@ def compareSourceToMaster(XLSSource: classes.XLSSource, XLSMaster: classes.XLSMa
         # Display to screen
         print("Compare Sheet: {}".format(source.name))
 
-        # get list of columns to use for compare
-        compareList = source.getCompareList(source.name, settings)
-        indexS = source.data.columns.get_indexer(compareList)
-        indexM = master.data.columns.get_indexer(compareList)
-        # print(compareList)
-        # print(indexM)
-        # print(indexS)
+        # Get list of columns that match the compare from settings
+        compareList = list()
+        settingsCompareList = settings.getItemListFromName(sheetName, "compare")
+        tempList = source.dataColumnsToList()
+        for i, listValue in enumerate(tempList):
+            listValueOriginal = source.columnMap.convertToOriginal(listValue)
+            if listValueOriginal[0] in settingsCompareList:
+                compareList.append(listValue)
 
         for SP, sourceLine in source.data.iterrows():
             # Get the search terms
             searchTerm = source.data.at[SP, 'searchIndex']
+
+            # get the pointer to the master
             MP = master.data.index[master.data['searchIndex'] == searchTerm].values
 
             if len(MP) > 1:

@@ -2,7 +2,7 @@ from .. import classes
 import pandas as pd
 
 
-def writeToXLS(XLSData, fileName: str, settings: classes.XMLSettings) -> bool:
+def writeToXLS(XLSData: classes.XLSFile, fileName: str, settings: classes.XMLSettings) -> bool:
     """
     Write XLS data to a file
     """
@@ -21,11 +21,12 @@ def writeToXLS(XLSData, fileName: str, settings: classes.XMLSettings) -> bool:
         sheet.data = sheet.data[sheet.printList].copy()
 
         # Replace Duplicate Columns with Original Columns
-        sheet.replaceDuplicateColumnsWithOriginalColumns()
+        columnNames = sheet.dataColumnsToList()
+        columnNames = sheet.columnMap.convertToOriginal(columnNames)
+        sheet.listToDataColumns(columnNames)
 
+        # Return data back to XLSFile
         XLSData.setSheet(sheetName, sheet)
-
-        str(XLSData.type).lower()
 
         # Define the colurs of the rows
         colour_new = False
