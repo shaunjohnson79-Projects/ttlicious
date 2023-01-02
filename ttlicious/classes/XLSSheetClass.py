@@ -3,14 +3,10 @@ import os
 from datetime import datetime
 import errno
 from .. import shaunMethods
+from .classSettingsClass import ClassSettings
 
 
-# Settings for the objects
-columnNamesDictionary = {
-    "date": "date",
-    "status": "status",
-    "search": "searchIndex",
-}
+classSettings = ClassSettings()
 
 
 class XLSSheet():
@@ -94,7 +90,7 @@ class XLSSheet():
         """update the index according to the xml settings"""
         # create the search index
         partNumberList = settings.getItemListFromName(sheet, 'partNumber')
-        self.data[columnNamesDictionary["search"]] = self.data[partNumberList].agg('-'.join, axis=1)
+        self.data[classSettings.columnNamesDictionary["search"]] = self.data[partNumberList].agg('-'.join, axis=1)
         # self.data=self.data.set_index(tempString)
 
     def _createDuplicateMap(self, columns) -> pd:

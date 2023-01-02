@@ -1,4 +1,7 @@
 from lxml import etree
+from .classSettingsClass import ClassSettings
+
+classSettings = ClassSettings()
 
 
 class XMLSettings():

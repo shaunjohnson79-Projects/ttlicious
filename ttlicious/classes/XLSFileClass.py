@@ -1,17 +1,10 @@
-import pandas as pd
+#import pandas as pd
+from datetime import datetime
 from .. import shaunMethods
 from .XLSSheetClass import XLSSheet
-import os
-from datetime import datetime
-import errno
+from .classSettingsClass import ClassSettings
 
-
-# Settings for the objects
-columnNamesDictionary = {
-    "date": "date",
-    "status": "status",
-    "search": "searchIndex",
-}
+classSettings = ClassSettings()
 
 
 class XLSFile():
@@ -95,8 +88,8 @@ class XLSUpdate(XLSFile):
     def conversion(self) -> None:
         self.type = 'Update'
         currentDateAndTime = datetime.now().strftime("%Y.%m.%d %H:%M:%S")
-        self.addColumn(columnNamesDictionary["date"], currentDateAndTime)
-        self.addPrintList(columnNamesDictionary["date"])
+        self.addColumn(classSettings.columnNamesDictionary["date"], currentDateAndTime)
+        self.addPrintList(classSettings.columnNamesDictionary["date"])
 
 
 class XLSSource(XLSFile):
@@ -106,7 +99,7 @@ class XLSSource(XLSFile):
 
     def conversion(self) -> None:
         self.type = 'Source'
-        # self.addColumn(columnNamesDictionary["status"], 'current')
+        # self.addColumn(classSettings.columnNamesDictionary["status"], 'current')
 
 
 class XLSCompare(XLSFile):
@@ -116,8 +109,8 @@ class XLSCompare(XLSFile):
 
     def conversion(self) -> None:
         self.type = 'Compare'
-        self.addColumn(columnNamesDictionary["status"], 'current')
-        self.addPrintList(columnNamesDictionary["status"])
+        self.addColumn(classSettings.columnNamesDictionary["status"], 'current')
+        self.addPrintList(classSettings.columnNamesDictionary["status"])
         self.modificationFound = False
 
 
@@ -129,10 +122,10 @@ class XLSMaster(XLSFile):
     def conversion(self) -> None:
         self.type = 'Master'
         self.addColumn('status', 'reference')
-        self.addPrintList(columnNamesDictionary["status"])
+        self.addPrintList(classSettings.columnNamesDictionary["status"])
         currentDateAndTime = datetime.now().strftime("%Y.%m.%d %H:%M:%S")
-        self.addColumn(columnNamesDictionary["date"], currentDateAndTime)
-        self.addPrintList(columnNamesDictionary["date"])
+        self.addColumn(classSettings.columnNamesDictionary["date"], currentDateAndTime)
+        self.addPrintList(classSettings.columnNamesDictionary["date"])
         self.modificationFound = False
 
 
