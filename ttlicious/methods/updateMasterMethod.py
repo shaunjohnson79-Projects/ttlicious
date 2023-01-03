@@ -14,8 +14,6 @@ def updateMaster(XLSUpdate: classes.XLSUpdate, XLSMaster: classes.XLSMaster) -> 
         masterSheet = XLSMaster.getSheet(sheetName)
         returnSheet = masterSheet
 
-        print(updateSheet.data)
-
         # Display to screen
         print("Update Sheet: {}".format(updateSheet.name))
 
@@ -55,5 +53,4 @@ def updateMaster(XLSUpdate: classes.XLSUpdate, XLSMaster: classes.XLSMaster) -> 
         # Add changed source data to XLSreturn
         XLSreturn.setSheet(sheetName, returnSheet)
 
-        print(updateSheet.data)
     return XLSreturn

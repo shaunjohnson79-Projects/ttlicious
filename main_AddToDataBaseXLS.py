@@ -22,13 +22,13 @@ def main() -> None:
     XLSMaster = classes.XLSMaster(fileInfo['XLS_masterRef'], settings)
 
     # Calculate the new master file
-    XLSMaster2 = methods.updateMaster(XLSUpdate, XLSMaster)
+    XLSMaster = methods.updateMaster(XLSUpdate, XLSMaster)
 
     # Calculate the file to return to SAP
-    XLSUpdate2 = methods.createSAPupdate(XLSUpdate)
+    XLSUpdate = methods.createSAPupdate(XLSUpdate)
 
-    methods.writeToXLS(XLSMaster2, fileInfo['XLS_masterWrite'], settings)
-    methods.writeToXLS(XLSUpdate2, fileInfo['XLS_SAP'], settings)
+    methods.writeToXLS(XLSMaster, fileInfo['XLS_masterWrite'], settings)
+    methods.writeToXLS(XLSUpdate, fileInfo['XLS_SAP'], settings)
 
 
 if __name__ == "__main__":
