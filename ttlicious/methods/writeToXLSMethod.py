@@ -62,15 +62,16 @@ def writeToXLS(XLSData: classes.XLSFile, fileName: str, settings: classes.XMLSet
             format_change = workbook.add_format({'bg_color': colour_change})
             format_reference = workbook.add_format({'bg_color': colour_reference})
 
-            status = sheet.data['status'].tolist()
-            for i, tempStatus in enumerate(status):
-                match str(tempStatus).lower():
-                    case 'new':
-                        worksheet.set_row(i+1+rowOffSet-1, cell_format=format_new)
-                    case 'change':
-                        worksheet.set_row(i+1+rowOffSet-1, cell_format=format_change)
-                    case 'reference':
-                        worksheet.set_row(i+1+rowOffSet-1, cell_format=format_reference)
-                    case _:
-                        pass
+            if 'status' in sheet.data.columns:
+                status = sheet.data['status'].tolist()
+                for i, tempStatus in enumerate(status):
+                    match str(tempStatus).lower():
+                        case 'new':
+                            worksheet.set_row(i+1+rowOffSet-1, cell_format=format_new)
+                        case 'change':
+                            worksheet.set_row(i+1+rowOffSet-1, cell_format=format_change)
+                        case 'reference':
+                            worksheet.set_row(i+1+rowOffSet-1, cell_format=format_reference)
+                        case _:
+                            pass
     return True

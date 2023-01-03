@@ -10,42 +10,50 @@ def updateMaster(XLSUpdate: classes.XLSUpdate, XLSMaster: classes.XLSMaster) -> 
     sheetList = XLSUpdate.getSheetList()
     for sheetName in sheetList:
         # Get the sheets manually
-        update = XLSUpdate.getSheet(sheetName)
-        master = XLSMaster.getSheet(sheetName)
+        updateSheet = XLSUpdate.getSheet(sheetName)
+        masterSheet = XLSMaster.getSheet(sheetName)
+        returnSheet = masterSheet
+
+        print(updateSheet.data)
 
         # Display to screen
-        print("Update Sheet: {}".format(update.name))
+        print("Update Sheet: {}".format(updateSheet.name))
 
-        for UP, updateLine in update.data.iterrows():
-            if updateLine['status'] == 'update':
+        for UP, tempLine in updateSheet.data.iterrows():
+            tempLine = tempLine.copy()
+
+            if tempLine['status'] == 'update':
 
                 # get the searchIndex in the master file
-                searchTerm = updateLine['searchIndex']
-                MP = master.data.index[master.data['searchIndex'] == searchTerm].values
+                searchTerm = tempLine['searchIndex']
+                MP = masterSheet.data.index[masterSheet.data['searchIndex'] == searchTerm].values
 
                 if len(MP) > 1:
                     # check for duplicates in master
                     raise Exception("Write code here")
                 elif len(MP) == 0:
                     # Create pointer based on UP position
-                    MP = UP+0.5
-                    updateLine['status'] = 'new'
-                    XLSreturn.modificationFound = True
-
-                else:
+                    MP2 = UP+0.5
+                    tempLine['status'] = 'new'
+                elif len(MP) == 1:
                     # Get pointer for row to replace
-                    MP = int(MP)
-                    updateLine['status'] = 'change'
-                    XLSreturn.modificationFound = True
+                    MP2 = int(MP)
+                    tempLine['status'] = 'change'
+                else:
+                    pass
 
                 # Display to screen
-                print(f"  Update Master: {searchTerm:25} {updateLine['status']}")
+                print(f"  Update Master: {searchTerm:25} {tempLine['status']}")
 
                 # Update or add the line
-                master.data.loc[MP] = updateLine
+                XLSreturn.modificationFound = True
+                #returnSheet.data.loc[MP2] = tempLine
+
         # Reorder the index
-        master.data = master.data.sort_index().reset_index(drop=True)
+        returnSheet.data = returnSheet.data.sort_index().reset_index(drop=True)
 
         # Add changed source data to XLSreturn
-        XLSreturn.setSheet(sheetName, master)
+        XLSreturn.setSheet(sheetName, returnSheet)
+
+        print(updateSheet.data)
     return XLSreturn
