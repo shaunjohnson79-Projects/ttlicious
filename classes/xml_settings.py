@@ -1,5 +1,5 @@
 from lxml import etree
-from .classSettingsClass import ClassSettings
+from .class_settings import ClassSettings
 
 classSettings = ClassSettings()
 

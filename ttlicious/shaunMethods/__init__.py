@@ -1,1 +1,0 @@
-from .shaunScripts import getIndices

@@ -1,0 +1,13 @@
+sheetType:
+    source: source
+    master: master
+    compare: compare
+    sap: sap
+labels:
+    reference: reference
+    new: new
+    updated: updated
+columnLabels:
+    date: date
+    status: status
+    search: searchIndex

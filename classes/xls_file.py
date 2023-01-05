@@ -1,8 +1,8 @@
 #import pandas as pd
 from datetime import datetime
-from .. import shaunMethods
-from .XLSSheetClass import XLSSheet
-from .classSettingsClass import ClassSettings
+from .. import utils
+from .xls_sheet import XLSSheet
+from .class_settings import ClassSettings
 
 classSettings = ClassSettings()
 
@@ -23,12 +23,12 @@ class XLSFile():
 
     def getSheet(self, sheetName) -> XLSSheet:
         sheetList = self.getSheetList()
-        index = shaunMethods.getIndices(sheetList, sheetName, 1)
+        index = utils.getIndices(sheetList, sheetName, 1)
         return self.sheet[index]
 
     def setSheet(self, sheetName, tempSheet) -> bool:
         sheetList = self.getSheetList()
-        index = shaunMethods.getIndices(sheetList, sheetName, 1)
+        index = utils.getIndices(sheetList, sheetName, 1)
         self.sheet[index] = tempSheet
         return True
 
@@ -130,7 +130,7 @@ class XLSMaster(XLSFile):
 
 
 def debugXLSFile():
-    from .XMLSettingsClass import XMLSettings
+    from .xml_settings import XMLSettings
     settings = XMLSettings('settingsQuick.xml')
     settings = XMLSettings('settings.xml')
 

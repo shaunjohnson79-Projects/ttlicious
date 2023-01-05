@@ -2,8 +2,8 @@ import pandas as pd
 import os
 from datetime import datetime
 import errno
-from .. import shaunMethods
-from .classSettingsClass import ClassSettings
+from .. import utils
+from .class_settings import ClassSettings
 
 
 classSettings = ClassSettings()
@@ -154,7 +154,7 @@ class ColumnMapBlah():
         if isinstance(tempList, str):
             tempList = [tempList]
         for i, listValue in enumerate(tempList):
-            tp = shaunMethods.getIndices(self.updated, listValue)
+            tp = utils.getIndices(self.updated, listValue)
             if isinstance(tp, int) == 1:
                 tempList[i] = self.original[tp]
         return tempList
@@ -163,18 +163,18 @@ class ColumnMapBlah():
         if isinstance(tempList, str):
             tempList = [tempList]
         for i, listValue in enumerate(tempList):
-            tp = shaunMethods.getIndices(self.original, listValue)
+            tp = utils.getIndices(self.original, listValue)
             if isinstance(tp, int) == 1:
                 tempList[i] = self.updated[tp]
         return tempList
 
 
 def debugXLSSheet():
-    from .XMLSettingsClass import XMLSettings
+    from .xml_settings import XMLSettings
     settings = XMLSettings('settingsQuick.xml')
     #settings = XMLSettings('settings.xml')
 
-    from .XLSFileClass import XLSSource, XLSMaster
+    from .xls_file import XLSSource, XLSMaster
     fileName = '20210323 Hinterkipper_de en_finala.xlsx'
     source = XLSSource(fileName, settings)
     print(source.getSheetList())

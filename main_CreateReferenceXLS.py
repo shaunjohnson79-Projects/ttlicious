@@ -1,8 +1,17 @@
-import ttlicious.methods as methods
-import ttlicious.classes as classes
+import hydra
+from hydra.core.config_store import ConfigStore
+
+from settings.configClasses import ColumnLabels
+import methods as methods
+import classes as classes
 
 
-def main() -> None:
+cs = ConfigStore.instance()
+cs.store(name="program_settings", node=config)
+
+
+@hydra.main(config_path="settings", config_name="config")
+def main(cfg: MNISTConfig) -> None:
 
     print(f"Program Start")
     # define the filenames
