@@ -1,5 +1,5 @@
-import ttlicious.classes as classes
-import ttlicious.methods as methods
+import src.classes as classes
+import src.methods as methods
 
 #import hydra
 #from hydra.core.config_store import ConfigStore

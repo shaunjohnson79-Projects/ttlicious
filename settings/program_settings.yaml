@@ -3,7 +3,7 @@ sheetType:
     master: master
     compare: compare
     sap: sap
-labels:
+statusLabels:
     reference: reference
     new: new
     updated: updated
@@ -11,3 +11,7 @@ columnLabels:
     date: date
     status: status
     search: searchIndex
+paths:
+  log: ./runs
+  data: ${hydra:runtime.cwd}/data/
+  settingsXML: ${hydra:runtime.cwd}/settingsXML/

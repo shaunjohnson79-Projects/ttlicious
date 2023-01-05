@@ -1,25 +1,32 @@
 import hydra
 from hydra.core.config_store import ConfigStore
+from omegaconf import OmegaConf
 
-from settings.configClasses import ColumnLabels
-import methods as methods
-import classes as classes
-
+from config_classes import MNISTConfig
+import src.methods as methods
+import src.classes as classes
+import blah
 
 cs = ConfigStore.instance()
-cs.store(name="program_settings", node=config)
+cs.store(name="program_settings", node=MNISTConfig)
 
 
-@hydra.main(config_path="settings", config_name="config")
+@hydra.main(config_path="settings", config_name="program_settings")
 def main(cfg: MNISTConfig) -> None:
+
+    blah.my_app()
+    return
+
+    print(cfg.columnLabels.date)
+    print(cfg.paths.settingsXML)
 
     print(f"Program Start")
     # define the filenames
     fileInfo = {}
-    fileInfo.update({'XML': 'settings.xml'})
-    # fileInfo.update({'XML': 'settingsQuick.xml'})
-    fileInfo.update({'XLS_source': '20210323 Hinterkipper_de en_finala.xlsx'})
-    fileInfo.update({'XLS_master': '20210323 Hinterkipper_de en_final_master.xlsx'})
+    fileInfo.update({'XML': f'{cfg.paths.settingsXML}settings.xml'})
+    #fileInfo.update({'XML': f'{cfg.paths.settingsXML}settingsQuick.xml'})
+    fileInfo.update({'XLS_source': f'{cfg.paths.data}20210323 Hinterkipper_de en_finala.xlsx'})
+    fileInfo.update({'XLS_master': f'{cfg.paths.data}20210323 Hinterkipper_de en_final_master.xlsx'})
 
     # Get the filename to output
     tempFileName = fileInfo['XLS_source'].replace(".xls", ".compare.xls")
