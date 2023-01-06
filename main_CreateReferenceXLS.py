@@ -1,24 +1,17 @@
 import hydra
 from hydra.core.config_store import ConfigStore
-from omegaconf import OmegaConf
+from settings.config_classes import MNISTConfig
 
-from config_classes import MNISTConfig
 import src.methods as methods
 import src.classes as classes
-import blah
+
 
 cs = ConfigStore.instance()
-cs.store(name="program_settings", node=MNISTConfig)
+cs.store(group="db", name="program_settings", node=MNISTConfig)
 
 
-@hydra.main(config_path="settings", config_name="program_settings")
+@hydra.main(config_path="settings", config_name="program_settings", version_base=None)
 def main(cfg: MNISTConfig) -> None:
-
-    blah.my_app()
-    return
-
-    print(cfg.columnLabels.date)
-    print(cfg.paths.settingsXML)
 
     print(f"Program Start")
     # define the filenames

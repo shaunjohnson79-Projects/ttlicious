@@ -2,15 +2,24 @@ import pandas as pd
 import os
 import errno
 from datetime import datetime
-
 from .. import utils
-from .class_settings import ClassSettings
 
 
-classSettings = ClassSettings()
+import hydra
+from settings.config_classes import MNISTConfig
+with hydra.initialize(config_path='../../settings/', version_base=None):
+    cfg: MNISTConfig = hydra.compose(config_name="program_settings")
 
 
 class XLSSheet():
+
+    # hydra.initialize(config_path="../../settings")
+    # hydra.initialize('../../settings/')
+    #hydra.initialize( config_path="../../settings")
+    #cfg = hydra.compose(config_name="program_settings", overrides=["db=mysql", "db.user=${oc.env:USER}"])
+    #cfg: MNISTConfig = hydra.compose(config_name="program_settings")
+    #cfg = hydra.compose(config_name="program_settings")
+
     def __init__(self, fileName, sheetName: str, settings):
         # Define the variables
         self.name = str
@@ -92,11 +101,11 @@ class XLSSheet():
     def _createSearchIndex(self, sheet, settings):
         """update the index according to the xml settings"""
         # Get the part number list
-        partNumberList = settings.getItemListFromName(sheet, 'partNumber')
+        partNumberList = settings.getItemListFromName(sheet, cfg.columnLabels.partNumber)
         partNumberList = self.columnMap.convertToUpdated(partNumberList)
 
         # Add columns with for search
-        self.data[classSettings.columnNamesDictionary["search"]] = self.data[partNumberList].agg('-'.join, axis=1)
+        self.data[cfg.columnLabels.search] = self.data[partNumberList].agg('-'.join, axis=1)
 
     def __repr__(self):
         import io

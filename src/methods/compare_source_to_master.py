@@ -1,4 +1,12 @@
+from settings.config_classes import MNISTConfig
+import hydra
 from .. import classes
+import os
+print(os.getcwd())
+
+
+with hydra.initialize(config_path='../../settings/', version_base=None):
+    cfg: MNISTConfig = hydra.compose(config_name="program_settings")
 
 
 def compareSourceToMaster(XLSSource: classes.XLSSource, XLSMaster: classes.XLSMaster, settings: classes.XMLSettings) -> classes.XLSUpdate:
@@ -26,17 +34,18 @@ def compareSourceToMaster(XLSSource: classes.XLSSource, XLSMaster: classes.XLSMa
 
         for SP, sourceLine in source.data.iterrows():
             # Get the search terms
-            searchTerm = source.data.at[SP, 'searchIndex']
+            searchTerm = source.data.at[SP, cfg.columnLabels.search]
 
             # get the pointer to the master
-            MP = master.data.index[master.data['searchIndex'] == searchTerm].values
+            MP = master.data.index[master.data[cfg.columnLabels.search] == searchTerm].values
 
             if len(MP) > 1:
                 # check for duplicates in master
                 raise Exception("Write code here")
             elif len(MP) == 0:
                 # check for data which is not in master
-                source.data.at[SP, 'status'] = 'new'
+                source.data.at[SP, cfg.columnLabels.status] = cfg.statusLabels.new
+
                 print("  {} New Line   : {}".format(SP, searchTerm))
                 XLSCompare.modificationFound = True
                 continue
@@ -47,7 +56,7 @@ def compareSourceToMaster(XLSSource: classes.XLSSource, XLSMaster: classes.XLSMa
                 tempSource = str(source.data.at[SP, compareColumn])
                 tempMaster = str(master.data.at[MP, compareColumn])
                 if tempSource != tempMaster:
-                    source.data.at[SP, 'status'] = 'change'
+                    source.data.at[SP, cfg.columnLabels.status] = cfg.statusLabels.change
                     print("  {} Line Change: {} {}".format(
                         SP, searchTerm, compareColumn))
                     rowToInsert = master.data.loc[MP]

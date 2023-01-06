@@ -7,10 +7,13 @@ statusLabels:
     reference: reference
     new: new
     updated: updated
+    current: current
+    change: change
 columnLabels:
     date: date
     status: status
     search: searchIndex
+    partNumber: partNumber
 paths:
   log: ./runs
   data: ${hydra:runtime.cwd}/data/

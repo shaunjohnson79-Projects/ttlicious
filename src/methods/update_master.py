@@ -1,5 +1,10 @@
 from .. import classes
 
+import hydra
+from settings.config_classes import MNISTConfig
+with hydra.initialize(config_path='../../settings/', version_base=None):
+    cfg: MNISTConfig = hydra.compose(config_name="program_settings")
+
 
 def updateMaster(XLSUpdate: classes.XLSUpdate, XLSMaster: classes.XLSMaster) -> classes.XLSMaster:
     """Update the master sheet with data that was flagged update"""
@@ -20,11 +25,11 @@ def updateMaster(XLSUpdate: classes.XLSUpdate, XLSMaster: classes.XLSMaster) -> 
         for UP, tempLine in updateSheet.data.iterrows():
             tempLine = tempLine.copy()
 
-            if tempLine['status'] == 'update':
+            if tempLine[cfg.columnLabels.status] == cfg.statusLabels.update:
 
                 # get the searchIndex in the master file
-                searchTerm = tempLine['searchIndex']
-                MP = masterSheet.data.index[masterSheet.data['searchIndex'] == searchTerm].values
+                searchTerm = tempLine[cfg.columnLabels.search]
+                MP = masterSheet.data.index[masterSheet.data[cfg.columnLabels.search] == searchTerm].values
 
                 if len(MP) > 1:
                     # check for duplicates in master
@@ -32,16 +37,16 @@ def updateMaster(XLSUpdate: classes.XLSUpdate, XLSMaster: classes.XLSMaster) -> 
                 elif len(MP) == 0:
                     # Create pointer based on UP position
                     MP2 = UP+0.5
-                    tempLine['status'] = 'new'
+                    tempLine[cfg.columnLabels.status] = cfg.statusLabels.new
                 elif len(MP) == 1:
                     # Get pointer for row to replace
                     MP2 = int(MP)
-                    tempLine['status'] = 'change'
+                    tempLine[cfg.columnLabels.status] = cfg.statusLabels.change
                 else:
                     pass
 
                 # Display to screen
-                print(f"  Update Master: {searchTerm:25} {tempLine['status']}")
+                print(f"  Update Master: {searchTerm:25} {tempLine[cfg.columnLabels.status]}")
 
                 # Update or add the line
                 XLSreturn.modificationFound = True

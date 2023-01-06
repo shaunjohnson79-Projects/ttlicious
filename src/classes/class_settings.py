@@ -2,8 +2,8 @@ class ClassSettings():
     def __init__(self) -> None:
 
         self.columnNamesDictionary = {
-            "date": "date",
-            "status": "status",
-            "search": "searchIndex",
+            cfg.statusLabels.date: cfg.statusLabels.date,
+            cfg.statusLabels.status: cfg.statusLabels.status,
+            "search": cfg.statusLabels.search,
         }
         return

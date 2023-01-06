@@ -2,11 +2,8 @@
 from omegaconf import OmegaConf
 
 from lxml import etree
-from .class_settings import ClassSettings
 import os
 import errno
-
-classSettings = ClassSettings()
 
 
 class XMLSettings():

@@ -1,5 +1,14 @@
+from settings.config_classes import MNISTConfig
+import hydra
 from .. import classes
 import pandas as pd
+
+import os
+print(os.getcwd())
+
+
+with hydra.initialize(config_path='../../settings/', version_base=None):
+    cfg: MNISTConfig = hydra.compose(config_name="program_settings")
 
 
 def writeToXLS(XLSData: classes.XLSFile, fileName: str, settings: classes.XMLSettings) -> bool:
@@ -62,13 +71,13 @@ def writeToXLS(XLSData: classes.XLSFile, fileName: str, settings: classes.XMLSet
             format_change = workbook.add_format({'bg_color': colour_change})
             format_reference = workbook.add_format({'bg_color': colour_reference})
 
-            if 'status' in sheet.data.columns:
-                status = sheet.data['status'].tolist()
+            if cfg.columnLabels.status in sheet.data.columns:
+                status = sheet.data[cfg.columnLabels.status].tolist()
                 for i, tempStatus in enumerate(status):
                     match str(tempStatus).lower():
-                        case 'new':
+                        case cfg.statusLabels.new:
                             worksheet.set_row(i+1+rowOffSet-1, cell_format=format_new)
-                        case 'change':
+                        case cfg.statusLabels.change:
                             worksheet.set_row(i+1+rowOffSet-1, cell_format=format_change)
                         case 'reference':
                             worksheet.set_row(i+1+rowOffSet-1, cell_format=format_reference)

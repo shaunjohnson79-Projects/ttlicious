@@ -1,13 +1,17 @@
-#import pandas as pd
+# import pandas as pd
 from datetime import datetime
 from .. import utils
 from .xls_sheet import XLSSheet
-from .class_settings import ClassSettings
 
-classSettings = ClassSettings()
+
+import hydra
+from settings.config_classes import MNISTConfig
+with hydra.initialize(config_path='../../settings/', version_base=None):
+    cfg: MNISTConfig = hydra.compose(config_name="program_settings")
 
 
 class XLSFile():
+
     def __init__(self, xlsFileName, settings):
         self.type = None
         self.fileName = xlsFileName
@@ -86,10 +90,10 @@ class XLSUpdate(XLSFile):
         self.conversion()
 
     def conversion(self) -> None:
-        self.type = 'Update'
+        self.type = cfg.statusLabels.update
         currentDateAndTime = datetime.now().strftime("%Y.%m.%d %H:%M:%S")
-        self.addColumn(classSettings.columnNamesDictionary["date"], currentDateAndTime)
-        self.addPrintList(classSettings.columnNamesDictionary["date"])
+        self.addColumn(cfg.columnLabels.date, currentDateAndTime)
+        self.addPrintList(cfg.columnLabels.date)
 
 
 class XLSSource(XLSFile):
@@ -98,8 +102,7 @@ class XLSSource(XLSFile):
         self.conversion()
 
     def conversion(self) -> None:
-        self.type = 'Source'
-        # self.addColumn(classSettings.columnNamesDictionary["status"], 'current')
+        self.type = cfg.sheetType.source
 
 
 class XLSCompare(XLSFile):
@@ -108,9 +111,9 @@ class XLSCompare(XLSFile):
         self.conversion()
 
     def conversion(self) -> None:
-        self.type = 'Compare'
-        self.addColumn(classSettings.columnNamesDictionary["status"], 'current')
-        self.addPrintList(classSettings.columnNamesDictionary["status"])
+        self.type = cfg.sheetType.compare
+        self.addColumn(cfg.columnLabels.status, cfg.statusLabels.current)
+        self.addPrintList(cfg.columnLabels.status)
         self.modificationFound = False
 
 
@@ -120,12 +123,12 @@ class XLSMaster(XLSFile):
         self.conversion()
 
     def conversion(self) -> None:
-        self.type = 'Master'
-        self.addColumn('status', 'reference')
-        self.addPrintList(classSettings.columnNamesDictionary["status"])
+        self.type = cfg.sheetType.master
+        self.addColumn(cfg.columnLabels.status, cfg.statusLabels.reference)
+        self.addPrintList(cfg.columnLabels.status)
         currentDateAndTime = datetime.now().strftime("%Y.%m.%d %H:%M:%S")
-        self.addColumn(classSettings.columnNamesDictionary["date"], currentDateAndTime)
-        self.addPrintList(classSettings.columnNamesDictionary["date"])
+        self.addColumn(cfg.columnLabels.date, currentDateAndTime)
+        self.addPrintList(cfg.columnLabels.date)
         self.modificationFound = False
 
 
@@ -143,7 +146,7 @@ def debugXLSFile():
         tempSheet = master.getSheet(sheetName)
         tempSheet.replaceDuplicateColumnsWithOriginalColumns()
         print(tempSheet)
-        #source.setSheet(sheetName, tempSheet)
+        # source.setSheet(sheetName, tempSheet)
 
     return
 
