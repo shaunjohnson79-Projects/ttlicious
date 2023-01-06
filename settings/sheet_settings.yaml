@@ -3,9 +3,6 @@ settings:
     -   name: Merkmalswerte
         nameRow: 1
         columns:
-            blah:
-            - Merkmalsname
-            - Merkmalswert
             partNumber:
                 - Merkmalsname
                 - Merkmalswert
@@ -71,4 +68,5 @@ settings:
                 - deutsch
                 - englisch
                 - Change Type
+    debug: False
 

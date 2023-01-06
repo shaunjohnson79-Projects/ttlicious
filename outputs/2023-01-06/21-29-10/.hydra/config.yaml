@@ -1,0 +1,71 @@
+settings:
+  sheet:
+  - name: Merkmalswerte
+    nameRow: 1
+    columns:
+      partNumber:
+      - Merkmalsname
+      - Merkmalswert
+      ignore:
+      - ADZHL
+      - ATINN
+      - Merkmalsname
+      - Merkmalsbezeichnung
+      - Merkmalswert
+      - Change Type
+      - Date Modified
+      compare:
+      - Wertebezeichnung (deutsch)
+      - Wertebezeichnung (englisch)
+      - Wertebezeichnung (polnisch)
+      - Langtext
+      masterUpdate:
+      - Wertebezeichnung (deutsch)
+      - Wertebezeichnung (englisch)
+      - Wertebezeichnung (polnisch)
+      - Langtext
+      - Change Type
+  - name: Merkmale
+    nameRow: 1
+    columns:
+      partNumber:
+      - Merkmalsname
+      ignore:
+      - ADZHL
+      - ATINN
+      - Merkmalsname
+      - Merkmalsbezeichnung
+      - Merkmalswert
+      - Change Type
+      - Date Modified
+      compare:
+      - Merkmalsbezeichnung (deutsch)
+      - Merkmalsbezeichnung (englisch)
+      - Langtext
+      masterUpdate:
+      - Merkmalsbezeichnung (deutsch)
+      - Merkmalsbezeichnung (englisch)
+      - Langtext
+      - Change Type
+  - name: Konditionen
+    nameRow: 2
+    columns:
+      partNumber:
+      - Kondition
+      ignore:
+      - Kondition
+      - ADZHL
+      - ATINN
+      - Merkmalsname
+      - Merkmalsbezeichnung
+      - Merkmalswert
+      - Change Type
+      - Date Modified
+      compare:
+      - deutsch
+      - englisch
+      masterUpdate:
+      - deutsch
+      - englisch
+      - Change Type
+  debug: false
