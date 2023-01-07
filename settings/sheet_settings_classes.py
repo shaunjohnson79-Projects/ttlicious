@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from omegaconf import MISSING
 
 
 @dataclass
@@ -17,6 +18,5 @@ class Sheet:
 
 
 @dataclass
-class SettingsMaster:
+class SheetSettingsClass:
     sheet: list[Sheet]
-    debug: bool

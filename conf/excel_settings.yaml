@@ -1,5 +1,7 @@
 defaults:
-    - program_setting_schema
+    - excel_settings_class_schema
+    - _self_
+
 
 sheetType:
     source: source

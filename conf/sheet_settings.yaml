@@ -1,6 +1,7 @@
 defaults:
-    - sheet_settings_schema
- 
+    - sheet_settings_class_schema
+    - _self_
+
 sheet:
 -   name: Merkmalswerte
     nameRow: 1

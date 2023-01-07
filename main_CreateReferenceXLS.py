@@ -1,6 +1,6 @@
 import hydra
 from hydra.core.config_store import ConfigStore
-from settings.config_classes import MNISTConfig
+from settings.program_settings_classes import MNISTConfig
 
 import src.methods as methods
 import src.classes as classes
@@ -12,6 +12,8 @@ cs.store(group="db", name="program_settings", node=MNISTConfig)
 
 @hydra.main(config_path="settings", config_name="program_settings", version_base=None)
 def main(cfg: MNISTConfig) -> None:
+
+    return
 
     print(f"Program Start")
     # define the filenames

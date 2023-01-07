@@ -6,7 +6,7 @@ from .. import utils
 
 
 import hydra
-from settings.config_classes import MNISTConfig
+from settings.program_settings_classes import MNISTConfig
 with hydra.initialize(config_path='../../settings/', version_base=None):
     cfg: MNISTConfig = hydra.compose(config_name="program_settings")
 

@@ -1,6 +1,6 @@
 import hydra
 from hydra.core.config_store import ConfigStore
-from settings.config_classes import MNISTConfig
+from settings.program_settings_classes import MNISTConfig
 
 import src.classes as classes
 import src.methods as methods

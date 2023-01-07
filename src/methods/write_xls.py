@@ -1,4 +1,4 @@
-from settings.config_classes import MNISTConfig
+from settings.program_settings_classes import MNISTConfig
 import hydra
 from .. import classes
 import pandas as pd
