@@ -1,12 +1,13 @@
-from settings.program_settings_classes import MNISTConfig
-import hydra
 from .. import classes
 import os
-print(os.getcwd())
 
 
-with hydra.initialize(config_path='../../settings/', version_base=None):
-    cfg: MNISTConfig = hydra.compose(config_name="program_settings")
+import hydra
+with hydra.initialize(config_path='../../conf', version_base=None):
+    from conf.excel_settings_class import ExcelSettingsLink
+    cfg: ExcelSettingsLink = hydra.compose(config_name="excel_settings")
+    #from conf.sheet_settings_class import SheetSettingsLink
+    #cfg2: SheetSettingsLink = hydra.compose(config_name="sheet_settings")
 
 
 def compareSourceToMaster(XLSSource: classes.XLSSource, XLSMaster: classes.XLSMaster, settings: classes.XMLSettings) -> classes.XLSUpdate:

@@ -1,19 +1,18 @@
-import hydra
-from hydra.core.config_store import ConfigStore
-from settings.program_settings_classes import MNISTConfig
+
 
 import src.methods as methods
 import src.classes as classes
 
+import hydra
+# with hydra.initialize(config_path='conf', version_base=None):
+from conf.excel_settings_class import ExcelSettingsLink
+#cfg: ExcelSettingsLink = hydra.compose(config_name="excel_settings")
+#from conf.sheet_settings_class import SheetSettingsLink
+#cfg2: SheetSettingsLink = hydra.compose(config_name="sheet_settings")
 
-cs = ConfigStore.instance()
-cs.store(group="db", name="program_settings", node=MNISTConfig)
 
-
-@hydra.main(config_path="settings", config_name="program_settings", version_base=None)
-def main(cfg: MNISTConfig) -> None:
-
-    return
+@hydra.main(config_path="conf", config_name="excel_settings", version_base=None)
+def main(cfg: ExcelSettingsLink) -> None:
 
     print(f"Program Start")
     # define the filenames

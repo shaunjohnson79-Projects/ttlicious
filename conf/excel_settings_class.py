@@ -48,13 +48,13 @@ class ExcelSettingsLink:
         print(f"init")
 
 
-def register_configs() -> None:
+def register_configs(tempName, tempNode) -> None:
     cs = ConfigStore.instance()
     cs.store(
-        name="excel_settings_class_schema",
-        node=ExcelSettingsLink,
+        name=tempName,
+        node=tempNode,
     )
+    print(f"ConfigStore: {tempName} {tempNode.__class__.__name__} ")
 
 
-register_configs()
-print(f"EOF Excel")
+register_configs(tempName="excel_settings_class_schema", tempNode=ExcelSettingsLink)

@@ -1,6 +1,3 @@
-
-from omegaconf import OmegaConf
-
 from lxml import etree
 import os
 import errno

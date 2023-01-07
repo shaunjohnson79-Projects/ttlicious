@@ -25,13 +25,13 @@ class SheetSettingsLink:
         print(f"asdasdasd")
 
 
-def register_configs() -> None:
+def register_configs(tempName, tempNode) -> None:
     cs = ConfigStore.instance()
     cs.store(
-        name="sheet_settings_class_schema",
-        node=SheetSettingsLink,
+        name=tempName,
+        node=tempNode,
     )
+    print(f"ConfigStore: {tempName} {tempNode.__class__.__name__} ")
 
 
-register_configs()
-print(f"EOF Excel")
+register_configs(tempName="sheet_settings_class_schema", tempNode=SheetSettingsLink)
