@@ -3,23 +3,23 @@ import os
 import errno
 from datetime import datetime
 from .. import utils
-
 import hydra
+
 with hydra.initialize(config_path='../../conf', version_base=None):
     from conf.excel_settings_class import ExcelSettingsLink
     cfg: ExcelSettingsLink = hydra.compose(config_name="excel_settings")
-    #from conf.sheet_settings_class import SheetSettingsLink
-    #cfg2: SheetSettingsLink = hydra.compose(config_name="sheet_settings")
+    # from conf.sheet_settings_class import SheetSettingsLink
+    # cfg2: SheetSettingsLink = hydra.compose(config_name="sheet_settings")
 
 
 class XLSSheet():
 
     # hydra.initialize(config_path="../../settings")
     # hydra.initialize('../../settings/')
-    #hydra.initialize( config_path="../../settings")
-    #cfg = hydra.compose(config_name="program_settings", overrides=["db=mysql", "db.user=${oc.env:USER}"])
-    #cfg: MNISTConfig = hydra.compose(config_name="program_settings")
-    #cfg = hydra.compose(config_name="program_settings")
+    # hydra.initialize( config_path="../../settings")
+    # cfg = hydra.compose(config_name="program_settings", overrides=["db=mysql", "db.user=${oc.env:USER}"])
+    # cfg: MNISTConfig = hydra.compose(config_name="program_settings")
+    # cfg = hydra.compose(config_name="program_settings")
 
     def __init__(self, fileName, sheetName: str, settings):
         # Define the variables
@@ -183,7 +183,7 @@ class ColumnMapBlah():
 def debugXLSSheet():
     from .xml_settings import XMLSettings
     settings = XMLSettings('settingsQuick.xml')
-    #settings = XMLSettings('settings.xml')
+    # settings = XMLSettings('settings.xml')
 
     from .xls_file import XLSSource, XLSMaster
     fileName = '20210323 Hinterkipper_de en_finala.xlsx'
@@ -194,7 +194,7 @@ def debugXLSSheet():
     for sheetName in sheetList:
         tempSheet = master.getSheet(sheetName)
         print(tempSheet)
-        #source.setSheet(sheetName, tempSheet)
+        # source.setSheet(sheetName, tempSheet)
 
     return
 

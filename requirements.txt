@@ -1,6 +1,8 @@
 ###### Requirements without Version Specifiers ######
+#  pip3 install -r requirements.txt --upgrade
 lxml
 pandas
 hydra-core
 openpyxl
 xlsxwriter
+numexpr

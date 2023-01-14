@@ -1,13 +1,12 @@
 import src.classes as classes
 import src.methods as methods
-
-
 import hydra
+
 with hydra.initialize(config_path='conf', version_base=None):
     from conf.excel_settings_class import ExcelSettingsLink
     cfg: ExcelSettingsLink = hydra.compose(config_name="excel_settings")
-#from conf.sheet_settings_class import SheetSettingsLink
-#cfg2: SheetSettingsLink = hydra.compose(config_name="sheet_settings")
+# from conf.sheet_settings_class import SheetSettingsLink
+# cfg2: SheetSettingsLink = hydra.compose(config_name="sheet_settings")
 
 
 @hydra.main(config_path="conf", config_name="excel_settings", version_base=None)
