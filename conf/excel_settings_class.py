@@ -8,6 +8,7 @@ class SheetType:
     master: str
     compare: str
     sap: str
+    update: str
 
 
 @dataclass

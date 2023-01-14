@@ -84,6 +84,34 @@ class XLSFile():
         # returnString = f"{returnString}{s}\n"
         return returnString
 
+    def setExcelFileType(self, sheetType: str):
+        match sheetType:
+            case cfg.sheetType.update:
+                self.type = cfg.sheetType.update
+                currentDateAndTime = datetime.now().strftime("%Y.%m.%d %H:%M:%S")
+                self.addColumn(cfg.columnLabels.date, currentDateAndTime)
+                self.addPrintList(cfg.columnLabels.date)
+            case cfg.sheetType.source:
+                self.type = cfg.sheetType.source
+            case cfg.sheetType.master:
+                self.type = cfg.sheetType.master
+                self.addColumn(cfg.columnLabels.status, cfg.statusLabels.reference)
+                self.addPrintList(cfg.columnLabels.status)
+                currentDateAndTime = datetime.now().strftime("%Y.%m.%d %H:%M:%S")
+                self.addColumn(cfg.columnLabels.date, currentDateAndTime)
+                self.addPrintList(cfg.columnLabels.date)
+                self.modificationFound = False
+            case cfg.sheetType.compare:
+                self.type = cfg.sheetType.compare
+                self.addColumn(cfg.columnLabels.status, cfg.statusLabels.current)
+                self.addPrintList(cfg.columnLabels.status)
+                self.modificationFound = False
+            case cfg.sheetType.sap:
+                pass
+            case _:
+                raise exception("Unknown sheetType")
+        return
+
 
 class XLSUpdate(XLSFile):
     def __init__(self, *args, **kwargs) -> None:

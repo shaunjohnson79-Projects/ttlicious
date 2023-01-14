@@ -3,9 +3,9 @@ import src.methods as methods
 
 
 import hydra
-# with hydra.initialize(config_path='conf', version_base=None):
-from conf.excel_settings_class import ExcelSettingsLink
-#cfg: ExcelSettingsLink = hydra.compose(config_name="excel_settings")
+with hydra.initialize(config_path='conf', version_base=None):
+    from conf.excel_settings_class import ExcelSettingsLink
+    cfg: ExcelSettingsLink = hydra.compose(config_name="excel_settings")
 #from conf.sheet_settings_class import SheetSettingsLink
 #cfg2: SheetSettingsLink = hydra.compose(config_name="sheet_settings")
 
@@ -14,7 +14,6 @@ from conf.excel_settings_class import ExcelSettingsLink
 def main(cfg: ExcelSettingsLink) -> None:
 
     print(f"Program Start")
-    return
     # define the filenames
     fileInfo = {}
     fileInfo.update({'XML': f'{cfg.paths.settingsXML}settings.xml'})

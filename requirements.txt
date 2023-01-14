@@ -1,0 +1,6 @@
+###### Requirements without Version Specifiers ######
+lxml
+pandas
+hydra-core
+openpyxl
+xlsxwriter
