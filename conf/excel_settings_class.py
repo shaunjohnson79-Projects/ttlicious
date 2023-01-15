@@ -33,6 +33,7 @@ class Paths:
     log: str
     data: str
     settingsXML: str
+    settingsYAML: str
 
 
 @dataclass

@@ -73,7 +73,7 @@ class XMLSettings():
 def debugXML():
     fileName = 'settings.xml'
     settings = XMLSettings("settings.xml")
-    sheetNames = settings.getSheetNames()
+    sheetNames = settings.getSheetNames
     print(sheetNames)
     for tempSheetName in sheetNames:
         print(tempSheetName)

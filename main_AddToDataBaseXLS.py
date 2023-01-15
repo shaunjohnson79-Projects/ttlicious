@@ -16,14 +16,15 @@ def main(cfg: ExcelSettingsLink) -> None:
     # define the filenames
     fileInfo = {}
     fileInfo.update({'XML': f'{cfg.paths.settingsXML}settings.xml'})
-    fileInfo.update({'XML': f'{cfg.paths.settingsXML}settingsQuick.xml'})
+    fileInfo.update({'YAML': f'{cfg.paths.settingsYAML}settings.yaml'})
     fileInfo.update({'XLS_update': f'{cfg.paths.data}20210323 Hinterkipper_de en_finala.update.xlsx'})
     fileInfo.update({'XLS_masterRef': f'{cfg.paths.data}20210323 Hinterkipper_de en_final_master.xlsx'})
     fileInfo.update({'XLS_masterWrite': f'{cfg.paths.data}20210323 Hinterkipper_de en_final_masterv2.xlsx'})
     fileInfo.update({'XLS_SAP': f'{cfg.paths.data}20210323 Hinterkipper_de en_final_SAP.xlsx'})
 
     # Read in the settings
-    settings = classes.XMLSettings(fileInfo['XML'])
+    #settings = classes.XMLSettings(fileInfo['XML'])
+    settings = classes.YAMLSettings(fileInfo['YAML'])
     # print(settings)
 
     # Read in the XLS

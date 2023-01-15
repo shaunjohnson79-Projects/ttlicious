@@ -17,6 +17,7 @@ def main(cfg: ExcelSettingsLink) -> None:
     # define the filenames
     fileInfo = {}
     fileInfo.update({'XML': f'{cfg.paths.settingsXML}settings.xml'})
+    fileInfo.update({'YAML': f'{cfg.paths.settingsYAML}settings.yaml'})
     # fileInfo.update({'XML': f'{cfg.paths.settingsXML}settingsQuick.xml'})
     fileInfo.update({'XLS_source': f'{cfg.paths.data}20210323 Hinterkipper_de en_finala.xlsx'})
     fileInfo.update({'XLS_master': f'{cfg.paths.data}20210323 Hinterkipper_de en_final_master.xlsx'})
@@ -26,7 +27,8 @@ def main(cfg: ExcelSettingsLink) -> None:
     fileInfo.update({'XLS_compare': tempFileName})
 
     # Read in the settings
-    settings = classes.XMLSettings(fileInfo['XML'])
+    #settings = classes.XMLSettings(fileInfo['XML'])
+    settings = classes.YAMLSettings(fileInfo['YAML'])
 
     # Read in the XLS
     XLSSource = classes.XLSSource(fileInfo['XLS_source'], settings)

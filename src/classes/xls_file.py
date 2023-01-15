@@ -19,7 +19,7 @@ class XLSFile():
         self.sheet = []
 
         # Load in the xls sheets
-        for sheetName in settings.getSheetNames():
+        for sheetName in settings.sheetNamesList:
             tempSheet = XLSSheet(self.fileName, sheetName, settings)
             self.sheet.append(tempSheet)
 

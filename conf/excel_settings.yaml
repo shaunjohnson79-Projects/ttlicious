@@ -24,3 +24,4 @@ paths:
   log: ./runs
   data: ${hydra:runtime.cwd}/data/
   settingsXML: ${hydra:runtime.cwd}/settingsXML/
+  settingsYAML: ${hydra:runtime.cwd}/settingsYAML/

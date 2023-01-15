@@ -1,0 +1,22 @@
+sheetType:
+  source: source
+  master: master
+  compare: compare
+  sap: sap
+  update: update
+statusLabels:
+  reference: reference
+  new: new
+  updated: updated
+  current: current
+  change: change
+columnLabels:
+  date: date
+  status: status
+  search: searchIndex
+  partNumber: partNumber
+paths:
+  log: ./runs
+  data: ${hydra:runtime.cwd}/data/
+  settingsXML: ${hydra:runtime.cwd}/settingsXML/
+  settingsYAML: ${hydra:runtime.cwd}/settingsYAML/
